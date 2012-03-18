@@ -1,6 +1,9 @@
 import java.net.InetAddress;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
+import java.net.Socket;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * Programme qui recoit la temperature courante d'une piece envoyee par Air.java
@@ -22,18 +25,24 @@ public class Thermometre {
           }
 
           try {
-               byte tab[] = new byte[100];
+               byte data[] = new byte[100];
                InetAddress group = InetAddress.getByName(argv[0]);
-               MulticastSocket socket = new MulticastSocket(new Integer(argv[1]));
-               socket.joinGroup(group);
-               DatagramPacket dp = new DatagramPacket(tab, tab.length);
+               MulticastSocket socketMulticast = new MulticastSocket(new Integer(argv[1]));
+               socketMulticast.joinGroup(group);
+               DatagramPacket dp = new DatagramPacket(data, data.length);
                MessageTemperature msg;
 
+               InetAddress systeme = InetAddress.getByName("127.0.0.1");
+               Socket socketTCP = new Socket(systeme, 12000);
+//               ObjectInputStream input = new ObjectInputStream(socketTCP.getInputStream());
+               ObjectOutputStream output = new ObjectOutputStream(socketTCP.getOutputStream());
+
                while (true) {
-                    socket.receive(dp);
+                    socketMulticast.receive(dp);
                     msg = MessageTemperature.fromBytes(dp.getData(),dp.getLength());
                     if (msg.getType() == MessageTemperature.MESURE) {
                          System.out.println(msg.toString());
+                         output.writeObject(msg.getValeur());
                     }
                }
           } catch(Exception e) {
