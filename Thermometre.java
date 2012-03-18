@@ -42,11 +42,11 @@ public class Thermometre {
                     msg = MessageTemperature.fromBytes(dp.getData(),dp.getLength());
                     if (msg.getType() == MessageTemperature.MESURE) {
                          System.out.println(msg.toString());
-                         output.writeObject(msg.getValeur());
+                         output.writeObject(msg.getPiece() + " | " + msg.getValeur());
                     }
                }
           } catch(Exception e) {
-               System.err.println("[Erreur] Lecture socket : "+e);
+               System.err.println("[Erreur] Lecture socket : " + e);
           }
      }
 }

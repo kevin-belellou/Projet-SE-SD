@@ -96,7 +96,7 @@ public class Air extends Thread {
                byte tab[] = msg.toBytes();
                socket.send(new DatagramPacket(tab, tab.length, groupMulticast, port));
           } catch(Exception e) {
-               System.err.println("[Erreur] envoi mesure temperature : "+e);
+               System.err.println("[Erreur] envoi mesure temperature : " + e);
           }
      }
 
@@ -117,7 +117,7 @@ public class Air extends Thread {
           temperatureExt = tempNuit;
           temperatureCourante = (tempJour - tempNuit) / 2;
 
-          System.out.println(" *** valeurs initiales : nuit = "+ format.format(tempNuit) +" jour = "+format.format(tempJour));
+          System.out.println(" *** valeurs initiales : nuit = " + format.format(tempNuit) + " jour = " + format.format(tempJour));
 
           while (true) {
                for (int j = 0; j < intervalle ; j++) {
@@ -131,10 +131,10 @@ public class Air extends Thread {
                     }
                     // le jour : on augmente la temperature exterieure
                     if ( j < intervalle / 2)
-                         temperatureExt += (tempJour - tempNuit) / ( intervalle / 2);
+                         temperatureExt += (tempJour - tempNuit) / (intervalle / 2);
                     // la nuit : on diminue la temperature exterieure
                     else
-                         temperatureExt -= (tempJour - tempNuit) / ( intervalle / 2);
+                         temperatureExt -= (tempJour - tempNuit) / (intervalle / 2);
                }
 
                // on modifie a la fin complete de la journee les temperatures max et min
@@ -165,12 +165,12 @@ public class Air extends Thread {
                     Thread.sleep(3000);
                     valeur = attente.getDernier();
                     if (valeur >= 0) {
-                         System.out.println(" == demande de chauffage de niveau "+valeur);
+                         System.out.println(" == demande de chauffage de niveau " + valeur);
                          temperatureCourante += valeur / 4.0;
                     }
                }
           } catch (Exception e) {
-               System.err.println("[Erreur] reception donnees chauffage : "+e);
+               System.err.println("[Erreur] reception donnees chauffage : " + e);
           }
      }
 
@@ -184,15 +184,13 @@ public class Air extends Thread {
                socket = new MulticastSocket(port);
                socket.joinGroup(groupMulticast);
           } catch(Exception e) {
-               System.err.println("[Erreur] Impossible de creer la socket multicast : "+e);
-
+               System.err.println("[Erreur] Impossible de creer la socket multicast : " + e);
                System.exit(1);
           }
      }
 
      public String toString() {
-          return "Piece = "+nomPiece+" | temp = "+format.format(temperatureCourante)+
-                 " | ext = "+format.format(temperatureExt);
+          return "Piece = " + nomPiece + " | temp = " + format.format(temperatureCourante) + " | ext = " + format.format(temperatureExt);
      }
 
      public Air(String adrMulti, int port, String piece, int initRandom) {
@@ -295,7 +293,7 @@ public class Air extends Thread {
                          }
                     }
                } catch(Exception e) {
-                    System.err.println("[Erreur] Lecture socket : "+e);
+                    System.err.println("[Erreur] Lecture socket : " + e);
                }
           }
 

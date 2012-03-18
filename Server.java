@@ -17,8 +17,8 @@ public class Server {
 
                // attente les données venant du client
                while (true) {
-                    Integer temp = (Integer)input.readObject();
-                    System.out.println(" recu : "+temp);
+                    String chaine = (String)input.readObject();
+                    System.out.println(" recu : " + chaine);
                }
 
                // affiche les coordonnées du client qui vient de se connecter

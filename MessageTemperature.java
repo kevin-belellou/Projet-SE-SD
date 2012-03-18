@@ -60,10 +60,10 @@ public class MessageTemperature implements java.io.Serializable {
       * Convertit le message en son equivalent en tableau de byte.
       */
      public byte[] toBytes() {
-          byte tab[] = new byte[piece.length()+5];
+          byte tab[] = new byte[piece.length() + 5];
 
           int val = valeur;
-          for (int i=0; i < 4; i++) {
+          for (int i = 0; i < 4; i++) {
                tab[i] = (byte) (val & 0x000000FF);
                val = val >>> 8;
           }
@@ -71,8 +71,8 @@ public class MessageTemperature implements java.io.Serializable {
           tab[4] = type;
 
           byte tabPiece[] = piece.getBytes();
-          for (int i=0; i < piece.length(); i++)
-               tab[i+5] = tabPiece[i];
+          for (int i = 0; i < piece.length(); i++)
+               tab[i + 5] = tabPiece[i];
 
           return tab;
      }
@@ -86,11 +86,11 @@ public class MessageTemperature implements java.io.Serializable {
      public static MessageTemperature fromBytes(byte[] tab, int length) {
           int val[] = new int[4];
 
-          for (int i=0; i < 4; i++) {
+          for (int i = 0; i < 4; i++) {
                if (tab[i] < 0)
-                    val[i] = (tab[i] + 256) << (i *8);
+                    val[i] = (tab[i] + 256) << (i * 8);
                else
-                    val[i] = tab[i] << (i *8);
+                    val[i] = tab[i] << (i * 8);
           }
           int valeur = val[0] | val[1] | val[2] | val[3];
 
@@ -101,10 +101,13 @@ public class MessageTemperature implements java.io.Serializable {
 
      public String toString() {
           String msg = "type = ";
-          if (type == MessageTemperature.MESURE) msg += "mesure ";
-          else if (type == MessageTemperature.CHAUFFER) msg+="modifier ";
-          else msg +="inconnu ";
-          msg += ", valeur = "+valeur+", piece = "+piece;
+          if (type == MessageTemperature.MESURE)
+               msg += "mesure ";
+          else if (type == MessageTemperature.CHAUFFER)
+               msg += "modifier ";
+          else
+               msg += "inconnu ";
+          msg += ", valeur = " + valeur + ", piece = " + piece;
           return msg;
      }
 
