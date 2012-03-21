@@ -1,9 +1,8 @@
 import java.net.InetAddress;
-import java.net.DatagramPacket;
 import java.net.MulticastSocket;
 import java.net.Socket;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.io.ByteArrayOutputStream;
 
 /**
  * Programme qui recoit la temperature courante d'une piece envoyee par Air.java
@@ -32,17 +31,23 @@ public class Thermometre {
                DatagramPacket dp = new DatagramPacket(data, data.length);
                MessageTemperature msg;
 
-               InetAddress systeme = InetAddress.getByName("127.0.0.1");
-               Socket socketTCP = new Socket(systeme, 12000);
-//               ObjectInputStream input = new ObjectInputStream(socketTCP.getInputStream());
-               ObjectOutputStream output = new ObjectOutputStream(socketTCP.getOutputStream());
+               byte data2[] = new byte[100];
+               InetAddress adrSysteme = InetAddress.getByName("127.0.0.1");
+          
+//               DatagramSocket socketTCP = new DatagramSocket(adrSysteme, 12000);
+               Socket socketTCP = new Socket(adrSysteme, 12000);
+               ByteArrayOutputStream output = new ByteArrayOutputStream(100);
 
                while (true) {
                     socketMulticast.receive(dp);
                     msg = MessageTemperature.fromBytes(dp.getData(),dp.getLength());
                     if (msg.getType() == MessageTemperature.MESURE) {
                          System.out.println(msg.toString());
-                         output.writeObject(msg.getPiece() + " | " + msg.getValeur());
+
+                         data2 = msg.toBytes();
+                         output.reset();
+                         output.write(data2, 0, data2.length);
+                         output.writeTo(socketTCP.getOutputStream());
                     }
                }
           } catch(Exception e) {
