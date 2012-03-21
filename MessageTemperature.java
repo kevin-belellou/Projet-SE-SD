@@ -76,6 +76,7 @@ public class MessageTemperature implements java.io.Serializable {
 
           return tab;
      }
+
      /**
       * Retourne un message a partir de son equivalent en tableau de byte.
       * @param tab le tableau de byte contenant le message
