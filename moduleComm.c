@@ -3,9 +3,12 @@
 
 #define TAILLEBUFF 100
 
-void traiter_communication(int socketService);
+void traiter_communication(int socket);
+void communication_thermometre(int socket);
+void communication_chauffage(int socket);
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
      if(argc != 2) {
           printf("Wrong number of argument\n");
           return -1;
@@ -29,9 +32,8 @@ int main(int argc, char* argv[]) {
           printf("fuck\n");
           exit(-1);
      }
-     
-     if (listen(socket_ecoute, 10) == -1)
-     {
+
+     if (listen(socket_ecoute, 10) == -1) {
           perror("erreur listen");
           exit(1);
      }
@@ -49,40 +51,61 @@ int main(int argc, char* argv[]) {
                close(socket_ecoute);
                // fonction qui gère la communication avec le client
                traiter_communication(socket_service);
-/*               close(socket_service);*/
+               close(socket_service);
                exit(0);
           }
           close(socket_service);
      }
 }
 
-void traiter_communication(int sock) {
+void traiter_communication(int socket)
+{
+     char message[TAILLEBUFF];
+     int *type;
+
+     read(socket, message, TAILLEBUFF);
+     type = (int *)malloc(sizeof(int));
+     memcpy(type, message + 4, 1);
+
+     if (*type == 0) // Si c'est un message de type MESURE
+          communication_thermometre(socket);
+     else if (*type == 1) // Si c'est un message de type CHAUFFER
+          communication_chauffage(socket);
+     else {
+          fprintf(stderr, "Type de message non connu\n");
+          exit(-1);
+     }
+}
+
+void communication_thermometre(int socket)
+{
      // buffer qui contiendra le message reçu
      char message[TAILLEBUFF];
 
-     // chaîne reçue du client
-     char *chaine_recue;
+     // donnees reçues
+     char *piece;
      int *temperature;
-     int *type;
-     
+
      int nb_octets;
-     
-     nb_octets = read(sock, message, TAILLEBUFF);
+
+     nb_octets = read(socket, message, TAILLEBUFF);
      while (nb_octets != 0 && nb_octets != 1) {
           printf("je suis %d\n", getpid());
 
-/*          nb_octets = read(sock, message, TAILLEBUFF);*/
-          
-          chaine_recue = (char *)malloc((nb_octets - 5 + 1) * sizeof(char));
-          memcpy(chaine_recue, message + 5, nb_octets - 5);
-          chaine_recue[nb_octets - 5] = '\0';
+          piece = (char *)malloc((nb_octets - 5 + 1) * sizeof(char));
+          memcpy(piece, message + 5, nb_octets - 5);
+          piece[nb_octets - 5] = '\0';
 
-          printf("chaine ok\n");
           temperature = (int *)malloc(sizeof(int));
           memcpy(temperature, message, 4);
 
-          printf("piece : %s; temperature : %d\n", chaine_recue, *temperature);
-          nb_octets = read(sock, message, TAILLEBUFF);
+          printf("piece : %s; temperature : %d\n", piece, *temperature);
+          nb_octets = read(socket, message, TAILLEBUFF);
      }
-     printf("%d : j'exit", getpid());
+     printf("%d : j'exit\n", getpid());
+}
+
+void communication_chauffage(int socket)
+{
+     exit(0);
 }

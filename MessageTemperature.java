@@ -38,28 +38,32 @@ public class MessageTemperature implements java.io.Serializable {
      /**
       * Retourne la valeur stockee dans le message.
       */
-     public int getValeur() {
+     public int getValeur()
+     {
           return valeur;
      }
 
      /**
       * Retourne le type du message (MESURE ou CHAUFFER)
       */
-     public int getType() {
+     public int getType()
+     {
           return type;
      }
 
      /**
       * Retourne le nom de la piece
       */
-     public String getPiece() {
+     public String getPiece()
+     {
           return piece;
      }
 
      /**
       * Convertit le message en son equivalent en tableau de byte.
       */
-     public byte[] toBytes() {
+     public byte[] toBytes()
+     {
           byte tab[] = new byte[piece.length() + 5];
 
           int val = valeur;
@@ -84,7 +88,8 @@ public class MessageTemperature implements java.io.Serializable {
       * @return une instance de message initialisee avec le contenu du
       * tableau.
       */
-     public static MessageTemperature fromBytes(byte[] tab, int length) {
+     public static MessageTemperature fromBytes(byte[] tab, int length)
+     {
           int val[] = new int[4];
 
           for (int i = 0; i < 4; i++) {
@@ -100,7 +105,8 @@ public class MessageTemperature implements java.io.Serializable {
           return new MessageTemperature(valeur, tab[4], piece);
      }
 
-     public String toString() {
+     public String toString()
+     {
           String msg = "type = ";
           if (type == MessageTemperature.MESURE)
                msg += "mesure ";
@@ -118,7 +124,8 @@ public class MessageTemperature implements java.io.Serializable {
       * @param type le type du message (<code>MESURE</code> ou <code>CHAUFFER</code>)
       * @param piece le nom de le piece consideree
       */
-     public MessageTemperature(int valeur, byte type, String piece) {
+     public MessageTemperature(int valeur, byte type, String piece)
+     {
           this.valeur = valeur;
           this.type = type;
           this.piece = piece;

@@ -8,7 +8,8 @@
 #include <netinet/in.h>
 #include <errno.h>
 
-int creerSocketUDP(int port) {
+int creerSocketUDP(int port)
+{
      int sock;
      static struct sockaddr_in addr;
 
@@ -33,7 +34,8 @@ int creerSocketUDP(int port) {
      return sock;
 }
 
-int creerSocketTCP(int port) {
+int creerSocketTCP(int port)
+{
      int sock;
      static struct sockaddr_in addr;
 

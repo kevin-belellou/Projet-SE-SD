@@ -16,7 +16,9 @@ public class Thermometre {
       *   groupeMulticast: adresse IP du groupe multicast a utiliser pour la piece
       *   port : port du groupe multicast
       */
-     public static void main(String argv[]) {
+     public static void main(String argv[])
+     {
+          // Verification des arguments
           if (argv.length != 2) {
                System.err.println("Erreur dans les arguments !");
                System.err.println("Usage : $ java Thermometre groupeMulticast portMulticast");
@@ -24,26 +26,30 @@ public class Thermometre {
           }
 
           try {
+               // Variables pour le multicast
                byte data[] = new byte[100];
                InetAddress group = InetAddress.getByName(argv[0]);
                MulticastSocket socketMulticast = new MulticastSocket(new Integer(argv[1]));
-               socketMulticast.joinGroup(group);
+               socketMulticast.joinGroup(group); // Connexion au groupe multicast
                DatagramPacket dp = new DatagramPacket(data, data.length);
                MessageTemperature msg;
 
+               // Variables pour le TCP
                byte data2[] = new byte[100];
                InetAddress adrSysteme = InetAddress.getByName("127.0.0.1");
-          
-//               DatagramSocket socketTCP = new DatagramSocket(adrSysteme, 12000);
                Socket socketTCP = new Socket(adrSysteme, 12000);
                ByteArrayOutputStream output = new ByteArrayOutputStream(100);
 
                while (true) {
+                    // Reception des donnees depuis Air.java
                     socketMulticast.receive(dp);
                     msg = MessageTemperature.fromBytes(dp.getData(),dp.getLength());
+
                     if (msg.getType() == MessageTemperature.MESURE) {
+                         // Affichage
                          System.out.println(msg.toString());
 
+                         // Envoi des donnees au serveur central
                          data2 = msg.toBytes();
                          output.reset();
                          output.write(data2, 0, data2.length);

@@ -89,7 +89,8 @@ public class Air extends Thread {
       * standard la valeur de la temperature courante et exterieure.
       * Affiche sur la sortie d'erreur un message en cas de probleme.
       */
-     public void envoyerTemp() {
+     public void envoyerTemp()
+     {
           try {
                System.out.println(this.toString());
                MessageTemperature msg = new MessageTemperature(Math.round(temperatureCourante), MessageTemperature.MESURE, nomPiece);
@@ -106,7 +107,8 @@ public class Air extends Thread {
       * la sortie standard et envoie sur le groupe multicast la valeur
       * de la temperature courante 1 fois par seconde.
       */
-     public void variations() {
+     public void variations()
+     {
           float tempNuit, tempJour;
           // duree complete d'une journee
           int intervalle = 30;
@@ -154,7 +156,8 @@ public class Air extends Thread {
       * temperature courante en fonction de la puissance de
       * chauffage. En cas d'erreur, se termine.
       */
-     public void run() {
+     public void run()
+     {
           // lance le thread qui attend les messages sur la socket
           AttentePaquet attente = new AttentePaquet(socket);
           attente.start();
@@ -178,7 +181,8 @@ public class Air extends Thread {
       * Initialise la socket multicast. En cas d'erreur, le programme
       * se termine.
       */
-     protected void initMulticast(String nomMachine, int port) {
+     protected void initMulticast(String nomMachine, int port)
+     {
           try {
                groupMulticast = InetAddress.getByName(nomMachine);
                socket = new MulticastSocket(port);
@@ -189,11 +193,13 @@ public class Air extends Thread {
           }
      }
 
-     public String toString() {
+     public String toString()
+     {
           return "Piece = " + nomPiece + " | temp = " + format.format(temperatureCourante) + " | ext = " + format.format(temperatureExt);
      }
 
-     public Air(String adrMulti, int port, String piece, int initRandom) {
+     public Air(String adrMulti, int port, String piece, int initRandom)
+     {
           initMulticast(adrMulti, port);
           this.port = port;
           nomPiece = piece;
@@ -203,7 +209,8 @@ public class Air extends Thread {
           format = new DecimalFormat("00.00");
      }
 
-     public Air(String adrMulti, int port, String piece) {
+     public Air(String adrMulti, int port, String piece)
+     {
           initMulticast(adrMulti, port);
           this.port = port;
           nomPiece = piece;
@@ -223,7 +230,8 @@ public class Air extends Thread {
       *   determine la temperature exterieure. On lancera de preference les programmes Air de
       *   toutes les pieces avec la meme valeur.
       */
-     public static void main(String argv[]) {
+     public static void main(String argv[])
+     {
           if (argv.length < 3) {
                System.err.println("Erreur dans les arguments !");
                System.err.println("Usage : $ java Air groupeMulticast portMulticast nomPiece [seedRandom]");
@@ -261,13 +269,15 @@ public class Air extends Thread {
           /**
            * Retourne la derniere demande de chauffage et la remet a -1.
            */
-          public synchronized int getDernier() {
+          public synchronized int getDernier()
+          {
                int temp = dernier;
                dernier = -1;
                return temp;
           }
 
-          protected synchronized void setDernier(int val) {
+          protected synchronized void setDernier(int val)
+          {
                dernier = val;
           }
 
@@ -277,7 +287,8 @@ public class Air extends Thread {
            * dernier. En cas d'erreur, se termine (plus aucune lecture
            * n'est alors faite sur la socket).
            */
-          public void run() {
+          public void run()
+          {
                try {
                     byte tab[] = new byte[100];
                     DatagramPacket dp = new DatagramPacket(tab, tab.length);
@@ -297,7 +308,8 @@ public class Air extends Thread {
                }
           }
 
-          public AttentePaquet(MulticastSocket socket) {
+          public AttentePaquet(MulticastSocket socket)
+          {
                this.socket = socket;
           }
      }
