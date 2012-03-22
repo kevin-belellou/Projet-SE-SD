@@ -93,13 +93,13 @@ void communication_thermometre(int socket, char *piece)
      // Donnees recues
      int nb_octets;
      int *temperature;
+     temperature = (int *)malloc(sizeof(int));
 
      nb_octets = read(socket, message, TAILLEBUFF);
-     while (nb_octets != 0 && nb_octets != 1) {
-          temperature = (int *)malloc(sizeof(int));
+     while (nb_octets > 0) {
           memcpy(temperature, message, 4);
 
-          printf("%d ; piece : %s; temperature : %d\n", getpid(), piece, *temperature);
+          printf("%d ; piece : %s ; temperature : %d\n", getpid(), piece, *temperature);
           nb_octets = read(socket, message, TAILLEBUFF);
      }
      printf("%d : j'exit\n", getpid());
@@ -107,5 +107,15 @@ void communication_thermometre(int socket, char *piece)
 
 void communication_chauffage(int socket, char *piece)
 {
-     exit(0);
+     int i, valeur;
+
+     while (1) {
+          sleep(1);
+
+          valeur = rand() % 5;
+          printf("%d ; piece : %s ; chauffage : %d\n", getpid(), piece, valeur);
+
+          write(socket, &valeur, sizeof(int));
+     }
+     printf("%d : j'exit\n", getpid());
 }
