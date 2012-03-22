@@ -20,9 +20,9 @@ public class Chauffage {
      public static void main(String argv[])
      {
           // Verification des arguments
-          if (argv.length != 3) {
+          if (argv.length != 4) {
                System.err.println("Erreur dans les arguments !");
-               System.err.println("Usage : $ java Chauffage groupeMulticast portMulticast nivChauffage");
+               System.err.println("Usage : $ java Chauffage groupeMulticast portMulticast nivChauffage piece");
                System.exit(1);
           }
 
@@ -33,10 +33,24 @@ public class Chauffage {
                Integer port = new Integer(argv[1]);
                MulticastSocket socketMulticast = new MulticastSocket(port);
                MessageTemperature msg;
+               String piece = new String(argv[3]);
+
+               // Variables pour le TCP
+               byte data2[] = new byte[100];
+               InetAddress adrSysteme = InetAddress.getByName("127.0.0.1");
+               Socket socketTCP = new Socket(adrSysteme, 12000);
+               ByteArrayOutputStream output = new ByteArrayOutputStream(100);
+
+               // Connexion au module communication du systeme central
+               msg = new MessageTemperature(0, MessageTemperature.CHAUFFER, piece);
+               data2 = msg.toBytes();
+               output.reset();
+               output.write(data2, 0, data2.length);
+               output.writeTo(socketTCP.getOutputStream());
 
                while (true) {
                     // Envoi des donnees à Air.java
-                    msg = new MessageTemperature(new Integer(argv[2]), MessageTemperature.CHAUFFER, "chambre");
+                    msg = new MessageTemperature(new Integer(argv[2]), MessageTemperature.CHAUFFER, piece);
                     data = msg.toBytes();
                     socketMulticast.send(new DatagramPacket(data, data.length, group, port));
                }
