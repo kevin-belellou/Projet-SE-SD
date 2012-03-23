@@ -14,15 +14,17 @@ public class Chauffage {
       * Lance le programme Chauffage. Les parametres sont les suivants :
       * $ java Chauffage groupeMulticast portMulticast nivChauffage
       *   groupeMulticast: adresse IP du groupe multicast a utiliser pour la piece
-      *   port : port du groupe multicast
+      *   portMulticast : port du groupe multicast
       *   piece : nom de la piece
+      *   adrSysteme : adresse du systeme central
+      *   portSysteme : port du systeme central
       */
      public static void main(String argv[])
      {
           // Verification des arguments
-          if (argv.length != 3) {
+          if (argv.length != 5) {
                System.err.println("Erreur dans les arguments !");
-               System.err.println("Usage : $ java Chauffage groupeMulticast portMulticast piece");
+               System.err.println("Usage : $ java Chauffage groupeMulticast portMulticast piece adrSysteme portSysteme");
                System.exit(1);
           }
 
@@ -38,8 +40,8 @@ public class Chauffage {
                // Variables pour le TCP
                byte data2[] = new byte[100];
                int nb_octets;
-               InetAddress adrSysteme = InetAddress.getByName("127.0.0.1");
-               Socket socketTCP = new Socket(adrSysteme, 12000);
+               InetAddress adrSysteme = InetAddress.getByName(argv[3]);
+               Socket socketTCP = new Socket(adrSysteme, new Integer(argv[4]));
                ByteArrayOutputStream output = new ByteArrayOutputStream(100);
 
                // Connexion au module communication du systeme central

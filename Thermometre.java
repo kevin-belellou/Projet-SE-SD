@@ -14,14 +14,16 @@ public class Thermometre {
       * Lance le programme Thermometre. Les parametres sont les suivants :
       * $ java Thermometre groupeMulticast portMulticast
       *   groupeMulticast: adresse IP du groupe multicast a utiliser pour la piece
-      *   port : port du groupe multicast
+      *   portMulticast : port du groupe multicast
+      *   adrSysteme : adresse du systeme central
+      *   portSysteme : port du systeme central
       */
      public static void main(String argv[])
      {
           // Verification des arguments
-          if (argv.length != 2) {
+          if (argv.length != 4) {
                System.err.println("Erreur dans les arguments !");
-               System.err.println("Usage : $ java Thermometre groupeMulticast portMulticast");
+               System.err.println("Usage : $ java Thermometre groupeMulticast portMulticast adrSysteme portSysteme");
                System.exit(1);
           }
 
@@ -36,8 +38,8 @@ public class Thermometre {
 
                // Variables pour le TCP
                byte data2[] = new byte[100];
-               InetAddress adrSysteme = InetAddress.getByName("127.0.0.1");
-               Socket socketTCP = new Socket(adrSysteme, 12000);
+               InetAddress adrSysteme = InetAddress.getByName(argv[2]);
+               Socket socketTCP = new Socket(adrSysteme, new Integer(argv[3]));
                ByteArrayOutputStream output = new ByteArrayOutputStream(100);
 
                while (true) {

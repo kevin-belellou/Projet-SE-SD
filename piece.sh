@@ -26,8 +26,8 @@ fi
 
 gnome-terminal --hide-menubar \
      --tab-with-profile=Default -t "Air" -e "java Air $1 $2 $3" \
-     --tab-with-profile=Default -t "Thermometre" -e "java Thermometre $1 $2" \
-     --tab-with-profile=Default -t "Chauffage" -e "java Chauffage $1 $2 $3"
+     --tab-with-profile=Default -t "Thermometre" -e "java Thermometre $1 $2 $4 $5" \
+     --tab-with-profile=Default -t "Chauffage" -e "java Chauffage $1 $2 $3 $4 $5"
 
 #     chaine=''
 #     while getopts c option
