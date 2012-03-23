@@ -3,7 +3,8 @@
 
 #define TAILLEBUFF 100
 
-void traiter_communication(int socket);
+//void traiter_communication(int socket);
+void* traiter_communication(void* socket);
 void communication_thermometre(int socket, char *piece);
 void communication_chauffage(int socket, char *piece);
 
@@ -41,10 +42,15 @@ int main(int argc, char* argv[])
      // On attend la connexion du client
      lg_addr = sizeof(struct sockaddr_in);
 
-     signal(SIGCHLD, SIG_IGN);
+     //signal(SIGCHLD, SIG_IGN);
+
+	pthread_t thread;
 
      while(1) {
           socket_service = accept(socket_ecoute, (struct sockaddr *)&addr_client, &lg_addr);
+		pthread_create(&thread, NULL, traiter_communication, (void*)&socket_service);
+		
+		/*
           if (fork() == 0) {
                printf("Je fork, fils num %d cree\n", getpid());
                // On est dans le fils
@@ -56,11 +62,13 @@ int main(int argc, char* argv[])
                exit(0);
           }
           close(socket_service);
+		//*/
      }
 }
 
-void traiter_communication(int socket)
+void* traiter_communication(void* socket_param)
 {
+	int socket = *((int*)socket_param);
      char message[TAILLEBUFF];
      int nb_octets;
      char *piece;
@@ -83,6 +91,8 @@ void traiter_communication(int socket)
           fprintf(stderr, "Type de message non connu\n");
           exit(-1);
      }
+
+     close(socket);
 }
 
 void communication_thermometre(int socket, char *piece)
