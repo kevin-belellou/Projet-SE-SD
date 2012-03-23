@@ -1,19 +1,16 @@
 #include "functions.h"
-#include <signal.h>
 
 #define TAILLEBUFF 100
 
-//void traiter_communication(int socket);
 void* traiter_communication(void* socket);
 void communication_thermometre(int socket, char *piece);
 void communication_chauffage(int socket, char *piece);
 
-int main(int argc, char* argv[])
+void* init_moduleComm(void* port_param)
 {
-     if(argc != 2) {
-          printf("Wrong number of argument\n");
-          return -1;
-     }
+     // Copie du port
+	// (Déréférencement du cast du pointer void* vers int*)
+	int port = *((int*)port_param);
 
      // adresse socket coté client
      static struct sockaddr_in addr_client;
@@ -28,7 +25,7 @@ int main(int argc, char* argv[])
      int socket_ecoute, socket_service;
 
      // Création de la socket et bind via functions.h
-     socket_ecoute = creerSocketTCP(atoi(argv[1]));
+     socket_ecoute = creerSocketTCP(port);
      if (socket_ecoute == -1) {
           printf("fuck\n");
           exit(-1);
@@ -42,8 +39,6 @@ int main(int argc, char* argv[])
      // On attend la connexion du client
      lg_addr = sizeof(struct sockaddr_in);
 
-     //signal(SIGCHLD, SIG_IGN);
-
 	//Déclaration d'un thread
 	pthread_t thread;
      while(1) {
@@ -56,8 +51,8 @@ int main(int argc, char* argv[])
 
 void* traiter_communication(void* socket_param)
 {
-	//Copie de la socket
-	//(Déréférencement du cast du pointer void* vers int*)
+	// Copie de la socket
+	// (Déréférencement du cast du pointer void* vers int*)
 	int socket = *((int*)socket_param);
 
      char message[TAILLEBUFF];
@@ -83,7 +78,7 @@ void* traiter_communication(void* socket_param)
           exit(-1);
      }
 
-	//Traitement effectué, fermeture de la socket
+	// Traitement effectué, fermeture de la socket
      close(socket);
 }
 
