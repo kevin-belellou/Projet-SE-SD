@@ -44,31 +44,22 @@ int main(int argc, char* argv[])
 
      //signal(SIGCHLD, SIG_IGN);
 
+	//Déclaration d'un thread
 	pthread_t thread;
-
      while(1) {
+		//Récupération de la socket
           socket_service = accept(socket_ecoute, (struct sockaddr *)&addr_client, &lg_addr);
+		//Lancement du Thread avec passage de la socket en paramètre
 		pthread_create(&thread, NULL, traiter_communication, (void*)&socket_service);
-		
-		/*
-          if (fork() == 0) {
-               printf("Je fork, fils num %d cree\n", getpid());
-               // On est dans le fils
-               close(socket_ecoute);
-
-               // Fonction qui gère la communication avec le client
-               traiter_communication(socket_service);
-               close(socket_service);
-               exit(0);
-          }
-          close(socket_service);
-		//*/
      }
 }
 
 void* traiter_communication(void* socket_param)
 {
+	//Copie de la socket
+	//(Déréférencement du cast du pointer void* vers int*)
 	int socket = *((int*)socket_param);
+
      char message[TAILLEBUFF];
      int nb_octets;
      char *piece;
@@ -92,6 +83,7 @@ void* traiter_communication(void* socket_param)
           exit(-1);
      }
 
+	//Traitement effectué, fermeture de la socket
      close(socket);
 }
 
