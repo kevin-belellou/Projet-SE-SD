@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
      signal(SIGCHLD, SIG_IGN);
 
      while(1) {
-          socket_service = accept(socket_ecoute, (struct sockaddr *)&addr_client,&lg_addr);
+          socket_service = accept(socket_ecoute, (struct sockaddr *)&addr_client, &lg_addr);
           if (fork() == 0) {
                printf("Je fork, fils num %d cree\n", getpid());
                // On est dans le fils
@@ -112,7 +112,7 @@ void communication_chauffage(int socket, char *piece)
      while (1) {
           sleep(1);
 
-          valeur = rand() % 5;
+          valeur = (rand() % 6);
           printf("%d ; piece : %s ; chauffage : %d\n", getpid(), piece, valeur);
 
           write(socket, &valeur, sizeof(int));
