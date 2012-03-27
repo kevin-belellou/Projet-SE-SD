@@ -1,4 +1,8 @@
-#include "functions.h"
+#ifndef MODULECOMM_H
+#define MODULECOMM_H
+
+#include "fonctions.h"
+#include "structures.h"
 
 #define TAILLEBUFF 100
 
@@ -6,11 +10,12 @@ void* traiter_communication(void* socket);
 void communication_thermometre(int socket, char *piece);
 void communication_chauffage(int socket, char *piece);
 
-void* init_moduleComm(void* port_param)
+void* init_moduleComm(void* param)
 {
      // Copie du port
 	// (Déréférencement du cast du pointer void* vers int*)
-	int port = *((int*)port_param);
+	ParamModuleCom pcom = *((ParamModuleCom*)param);
+     int port = pcom.port;
 
      // adresse socket coté client
      static struct sockaddr_in addr_client;
@@ -39,12 +44,13 @@ void* init_moduleComm(void* port_param)
      // On attend la connexion du client
      lg_addr = sizeof(struct sockaddr_in);
 
-	//Déclaration d'un thread
+	// Déclaration d'un thread
 	pthread_t thread;
      while(1) {
-		//Récupération de la socket
+		// Récupération de la socket
           socket_service = accept(socket_ecoute, (struct sockaddr *)&addr_client, &lg_addr);
-		//Lancement du Thread avec passage de la socket en paramètre
+
+		// Lancement du Thread avec passage de la socket en paramètre
 		pthread_create(&thread, NULL, traiter_communication, (void*)&socket_service);
      }
 }
@@ -124,3 +130,5 @@ void communication_chauffage(int socket, char *piece)
      }
      printf("%d : j'exit\n", getpid());
 }
+
+#endif

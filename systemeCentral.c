@@ -1,14 +1,7 @@
 #include <pthread.h>
+#include "structures.h"
 #include "moduleComm.h"
 #include "ordonnanceur.h"
-
-typedef struct Piece Piece;
-struct Piece {
-     char nom[25];
-     int temperature;
-     int nivChauffage;
-};
-Piece *tabValeurs = NULL;
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +14,7 @@ int main(int argc, char *argv[])
      printf("sizeof(Piece) = %d\n", sizeof(Piece));
 
      Piece *temp = NULL;
+     Piece *tabValeurs = NULL;
      temp = realloc(tabValeurs, sizeof(Piece));
 
      if (temp != NULL)
@@ -35,13 +29,15 @@ int main(int argc, char *argv[])
      printf("temperature = %d\n", tabValeurs[0].temperature);
      printf("nom = %s\n", tabValeurs[0].nom);
 
-     return 0;
+     // return 0;
 
-     //Déclaration d'un thread
+     // Déclaration des thread
 	const int nbThread = 2;
 	pthread_t thread[nbThread];
 
-     pthread_create(&thread[0], NULL, init_moduleComm, (void*)&port);
+     ParamModuleCom pcom = {port, tabValeurs};
+
+     pthread_create(&thread[0], NULL, init_moduleComm, (void*)&pcom);
      pthread_create(&thread[1], NULL, init_ordonnanceur, NULL);
 
 	int i;
