@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include "moduleComm.h"
+#include "ordonnanceur.h"
 
 typedef struct Piece Piece;
 struct Piece {
@@ -30,19 +31,22 @@ int main(int argc, char *argv[])
      }
 
      tabValeurs[0].temperature = 5;
-     tabValeurs[0].nom = "polo";
+     strcpy(tabValeurs[0].nom, "polo");
      printf("temperature = %d\n", tabValeurs[0].temperature);
+     printf("nom = %s\n", tabValeurs[0].nom);
 
      return 0;
 
-     // Déclaration du thread de communication
-	pthread_t thread_comm;
+     //Déclaration d'un thread
+	const int nbThread = 2;
+	pthread_t thread[nbThread];
 
-     // Lancement du thread de communication
-     pthread_create(&thread_comm, NULL, init_moduleComm, (void*)&port);
+     pthread_create(&thread[0], NULL, init_moduleComm, (void*)&port);
+     pthread_create(&thread[1], NULL, init_ordonnanceur, NULL);
 
-     // Attente de la fin du thread de communication
-     pthread_join(thread_comm, NULL);
+	int i;
+	for(i = 0; i < nbThread; ++i)
+	     pthread_join(thread[i], NULL);
 
      return 0;
 }
