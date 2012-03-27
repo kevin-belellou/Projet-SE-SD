@@ -10,14 +10,13 @@ void* traiter_communication(void* socket);
 void communication_thermometre(int socket, char *piece);
 void communication_chauffage(int socket, char *piece);
 
-void* init_moduleComm(void* param)
+void* init_moduleComm(void* port_param)
 {
      // Copie du port
-	// (Déréférencement du cast du pointer void* vers int*)
-	ParamModuleCom pcom = *((ParamModuleCom*)param);
-     int port = pcom.port;
+     // (Dereferencement du cast du pointer void* vers int*)
+     int port = *((int*)port_param);
 
-     // adresse socket coté client
+     // adresse socket cote client
      static struct sockaddr_in addr_client;
 
      // adresse socket locale
@@ -26,10 +25,10 @@ void* init_moduleComm(void* param)
      // longueur adresse
      int lg_addr;
 
-     // socket d'écoute et de service
+     // socket d'ecoute et de service
      int socket_ecoute, socket_service;
 
-     // Création de la socket et bind via functions.h
+     // Creation de la socket et bind via functions.h
      socket_ecoute = creerSocketTCP(port);
      if (socket_ecoute == -1) {
           perror("erreur creation socket_ecoute");
@@ -44,22 +43,22 @@ void* init_moduleComm(void* param)
      // On attend la connexion du client
      lg_addr = sizeof(struct sockaddr_in);
 
-	// Déclaration d'un thread
-	pthread_t thread;
+     // Declaration d'un thread
+     pthread_t thread;
      while(1) {
-		// Récupération de la socket
+          // Recuperation de la socket
           socket_service = accept(socket_ecoute, (struct sockaddr *)&addr_client, &lg_addr);
 
-		// Lancement du Thread avec passage de la socket en paramètre
-		pthread_create(&thread, NULL, traiter_communication, (void*)&socket_service);
+          // Lancement du thread avec passage de la socket en parametre
+          pthread_create(&thread, NULL, traiter_communication, (void*)&socket_service);
      }
 }
 
 void* traiter_communication(void* socket_param)
 {
-	// Copie de la socket
-	// (Déréférencement du cast du pointer void* vers int*)
-	int socket = *((int*)socket_param);
+     // Copie de la socket
+     // (Dereferencement du cast du pointer void* vers int*)
+     int socket = *((int*)socket_param);
 
      char message[TAILLEBUFF];
      int nb_octets;
@@ -87,7 +86,7 @@ void* traiter_communication(void* socket_param)
           exit(-1);
      }
 
-	// Traitement effectué, fermeture de la socket
+     // Traitement effectue, fermeture de la socket
      close(socket);
 
      free(piece);
