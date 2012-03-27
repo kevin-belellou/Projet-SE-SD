@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include "moduleComm.h"
+#include "ordonnanceur.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,11 +12,15 @@ int main(int argc, char *argv[])
      int port = atoi(argv[1]);
 
      //Déclaration d'un thread
-	pthread_t thread;
+	const int nbThread = 2;
+	pthread_t thread[nbThread];
 
-     pthread_create(&thread, NULL, init_moduleComm, (void*)&port);
+     pthread_create(&thread[0], NULL, init_moduleComm, (void*)&port);
+     pthread_create(&thread[1], NULL, init_ordonnanceur, NULL);
 
-     pthread_join(thread, NULL);
+	int i;
+	for(i = 0; i < nbThread; ++i)
+	     pthread_join(thread[i], NULL);
 
      return 0;
 }
