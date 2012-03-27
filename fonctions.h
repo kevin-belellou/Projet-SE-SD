@@ -1,3 +1,6 @@
+#ifndef FONCTIONS_H
+#define FONCTIONS_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,3 +62,5 @@ int creerSocketTCP(int port)
 
      return sock;
 }
+
+#endif
