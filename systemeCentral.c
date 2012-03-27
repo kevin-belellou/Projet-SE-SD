@@ -12,20 +12,23 @@ int main(int argc, char *argv[])
 
      int port = atoi(argv[1]);
 
-     Piece *temp = NULL;
-     temp = realloc(tabValeurs, sizeof(Piece));
+/*     Piece *temp = NULL;*/
+/*     temp = realloc(tabPieces.tabValeurs, 2 * sizeof(Piece));*/
 
-     if (temp != NULL)
-          tabValeurs = temp;
-     else {
-          printf("Erreur realloc\n");
-          return -1;
-     }
+/*     if (temp != NULL)*/
+/*          tabPieces.tabValeurs = temp;*/
+/*     else {*/
+/*          printf("Erreur realloc\n");*/
+/*          return -1;*/
+/*     }*/
 
-     tabValeurs[0].temperature = 5;
-     strcpy(tabValeurs[0].nom, "polo");
-     printf("temperature = %d\n", tabValeurs[0].temperature);
-     printf("nom = %s\n", tabValeurs[0].nom);
+/*     tabPieces.tabValeurs[0].temperature = 5;*/
+/*     strcpy(tabPieces.tabValeurs[0].nom, "polo");*/
+/*     printf("temperature = %d\n", tabPieces.tabValeurs[0].temperature);*/
+
+     int polo = aggrandirTabPieces("test nom");
+     printf("nom = %s\n", tabPieces.tabValeurs[polo].nom);
+     return 0;
 
      // Declaration des threads
      const int nbThread = 2;
