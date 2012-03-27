@@ -16,7 +16,7 @@ int creerSocketUDP(int port)
      // création d'une socket UDP
      sock = socket(AF_INET, SOCK_DGRAM, 0);
      if (sock == -1) {
-          //perror("erreur création socket");
+          perror("erreur création socket");
           return -1;
      }
 
@@ -27,7 +27,7 @@ int creerSocketUDP(int port)
      addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
      if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-          //perror("erreur bind");
+          perror("erreur bind");
           return -1;
      }
 

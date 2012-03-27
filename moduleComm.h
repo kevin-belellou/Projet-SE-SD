@@ -27,7 +27,7 @@ void* init_moduleComm(void* port_param)
      // Création de la socket et bind via functions.h
      socket_ecoute = creerSocketTCP(port);
      if (socket_ecoute == -1) {
-          printf("fuck\n");
+          perror("erreur creation socket_ecoute");
           exit(-1);
      }
 
@@ -69,6 +69,9 @@ void* traiter_communication(void* socket_param)
      type = (int *)malloc(sizeof(int));
      memcpy(type, message + 4, 1);
 
+//     Piece *temp = NULL;
+//     temp = realloc(tabValeurs, )
+
      if (*type == 0) // Si c'est un message de type MESURE
           communication_thermometre(socket, piece);
      else if (*type == 1) // Si c'est un message de type CHAUFFER
@@ -80,6 +83,10 @@ void* traiter_communication(void* socket_param)
 
 	// Traitement effectué, fermeture de la socket
      close(socket);
+
+     free(piece);
+     free(type);
+     pthread_exit(NULL);
 }
 
 void communication_thermometre(int socket, char *piece)
@@ -100,6 +107,7 @@ void communication_thermometre(int socket, char *piece)
           nb_octets = read(socket, message, TAILLEBUFF);
      }
      printf("%d : j'exit\n", getpid());
+     free(temperature);
 }
 
 void communication_chauffage(int socket, char *piece)
