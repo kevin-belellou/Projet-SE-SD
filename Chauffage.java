@@ -10,6 +10,9 @@ import java.io.ByteArrayOutputStream;
  * a Air.java via le groupe multicast de cette piece.
  */
 public class Chauffage {
+
+     static final int TAILLEBUFF = 100;
+
      /**
       * Lance le programme Chauffage. Les parametres sont les suivants :
       * $ java Chauffage groupeMulticast portMulticast nivChauffage
@@ -30,7 +33,7 @@ public class Chauffage {
 
           try {
                // Variables pour le multicast
-               byte data[] = new byte[100];
+               byte data[] = new byte[TAILLEBUFF];
                InetAddress group = InetAddress.getByName(argv[0]);
                Integer port = new Integer(argv[1]);
                MulticastSocket socketMulticast = new MulticastSocket(port);
@@ -38,11 +41,11 @@ public class Chauffage {
                String piece = new String(argv[2]);
 
                // Variables pour le TCP
-               byte data2[] = new byte[100];
+               byte data2[] = new byte[TAILLEBUFF];
                int nb_octets;
                InetAddress adrSysteme = InetAddress.getByName(argv[3]);
                Socket socketTCP = new Socket(adrSysteme, new Integer(argv[4]));
-               ByteArrayOutputStream output = new ByteArrayOutputStream(100);
+               ByteArrayOutputStream output = new ByteArrayOutputStream(TAILLEBUFF);
 
                // Connexion au module communication du systeme central
                msg = new MessageTemperature(0, MessageTemperature.CHAUFFER, piece);

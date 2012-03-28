@@ -10,6 +10,9 @@ import java.io.ByteArrayOutputStream;
  * au module Communication Temperature du système central via des sockets TCP
  */
 public class Thermometre {
+
+     static final int TAILLEBUFF = 100;
+
      /**
       * Lance le programme Thermometre. Les parametres sont les suivants :
       * $ java Thermometre groupeMulticast portMulticast
@@ -29,7 +32,7 @@ public class Thermometre {
 
           try {
                // Variables pour le multicast
-               byte data[] = new byte[100];
+               byte data[] = new byte[TAILLEBUFF];
                InetAddress group = InetAddress.getByName(argv[0]);
                MulticastSocket socketMulticast = new MulticastSocket(new Integer(argv[1]));
                socketMulticast.joinGroup(group); // Connexion au groupe multicast
@@ -37,10 +40,10 @@ public class Thermometre {
                MessageTemperature msg;
 
                // Variables pour le TCP
-               byte data2[] = new byte[100];
+               byte data2[] = new byte[TAILLEBUFF];
                InetAddress adrSysteme = InetAddress.getByName(argv[2]);
                Socket socketTCP = new Socket(adrSysteme, new Integer(argv[3]));
-               ByteArrayOutputStream output = new ByteArrayOutputStream(100);
+               ByteArrayOutputStream output = new ByteArrayOutputStream(TAILLEBUFF);
 
                while (true) {
                     // Reception des donnees depuis Air.java
