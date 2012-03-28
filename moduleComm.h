@@ -1,6 +1,7 @@
 #ifndef MODULECOMM_H
 #define MODULECOMM_H
 
+#include <pthread.h>
 #include "fonctions.h"
 #include "structures.h"
 
@@ -74,6 +75,8 @@ void* traiter_communication(void* socket_param)
      type = (int *)malloc(sizeof(int));
      memcpy(type, message + 4, 1);
 
+     pthread_mutex_lock(&mutex);
+
      int place;
      int trouve = existeDansTabPieces(piece);
 
@@ -81,6 +84,8 @@ void* traiter_communication(void* socket_param)
           place = trouve;
      else
           place = aggrandirTabPieces(piece);
+
+     pthread_mutex_unlock(&mutex);
 
      if (*type == 0) // Si c'est un message de type MESURE
           communication_thermometre(socket, place);

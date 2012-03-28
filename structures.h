@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
 // Definit la structure d'une piece
 typedef struct Piece {
@@ -21,6 +22,9 @@ typedef struct TabPieces {
 // Declaration et initialisation du tableau de pieces 
 // utilise par tous les threads
 static TabPieces tabPieces = {0, NULL};
+
+// Declaration et initialisation du mutex
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // Fonction pour rechercher l'existence d'une piece
 // dans le tableau des pieces
