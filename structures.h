@@ -18,11 +18,34 @@ typedef struct TabPieces {
      Piece* tabValeurs;
 } TabPieces;
 
-// Declaration du tableau de pieces utilise par tous les threads
+// Declaration et initialisation du tableau de pieces 
+// utilise par tous les threads
 static TabPieces tabPieces = {0, NULL};
+
+// Fonction pour rechercher l'existence d'une piece
+// dans le tableau des pieces
+// Renvoie -1 si la piece n'est pas trouvee,
+// sinon renvoie la place à laquelle la piece se trouve
+int existeDansTabPieces(char *piece)
+{
+     int i, trouve = 0;
+
+     for (i = 0; i < tabPieces.nbPieces; i++)
+          if (strcmp(tabPieces.tabValeurs[i].nom, piece) == 0) {
+               trouve = 1;
+               break;
+          }
+
+     if (trouve)
+          return i;
+     else
+          return -1;
+}
 
 // Fonction pour aggrandir le tableau de pieces
 // en passant en parametre le nom de la nouvelle piece
+// Renvoie -1 en cas d'erreur lors de la recallocation,
+// sinon renvoie la place à laquelle la nouvelle piece se trouve
 int aggrandirTabPieces(char *nom)
 {
      // Reallocation du tableau

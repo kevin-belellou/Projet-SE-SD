@@ -7,8 +7,8 @@
 #define TAILLEBUFF 100
 
 void* traiter_communication(void* socket);
-void communication_thermometre(int socket, char *piece);
-void communication_chauffage(int socket, char *piece);
+void communication_thermometre(int socket, int place);
+void communication_chauffage(int socket, int place);
 
 void* init_moduleComm(void* port_param)
 {
@@ -74,13 +74,18 @@ void* traiter_communication(void* socket_param)
      type = (int *)malloc(sizeof(int));
      memcpy(type, message + 4, 1);
 
-//     Piece *temp = NULL;
-//     temp = realloc(tabValeurs, )
+     int place;
+     int trouve = existeDansTabPieces(piece);
+
+     if (trouve >= 0)
+          place = trouve;
+     else
+          place = aggrandirTabPieces(piece);
 
      if (*type == 0) // Si c'est un message de type MESURE
-          communication_thermometre(socket, piece);
+          communication_thermometre(socket, place);
      else if (*type == 1) // Si c'est un message de type CHAUFFER
-          communication_chauffage(socket, piece);
+          communication_chauffage(socket, place);
      else {
           fprintf(stderr, "Type de message non connu\n");
           exit(-1);
@@ -94,8 +99,10 @@ void* traiter_communication(void* socket_param)
      pthread_exit(NULL);
 }
 
-void communication_thermometre(int socket, char *piece)
+void communication_thermometre(int socket, int place)
 {
+     char *piece = tabPieces.tabValeurs[place].nom;
+
      // Buffer qui contiendra le message reçu
      char message[TAILLEBUFF];
 
@@ -115,9 +122,10 @@ void communication_thermometre(int socket, char *piece)
      free(temperature);
 }
 
-void communication_chauffage(int socket, char *piece)
+void communication_chauffage(int socket, int place)
 {
      int i, valeur;
+     char *piece = tabPieces.tabValeurs[place].nom;
 
      while (1) {
           sleep(1);
