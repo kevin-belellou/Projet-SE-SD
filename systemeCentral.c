@@ -1,5 +1,5 @@
 #include <pthread.h>
-#include "structures.h"
+#include "memoire.h"
 #include "moduleComm.h"
 #include "ordonnanceur.h"
 

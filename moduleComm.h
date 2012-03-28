@@ -3,7 +3,7 @@
 
 #include <pthread.h>
 #include "fonctions.h"
-#include "structures.h"
+#include "memoire.h"
 
 #define TAILLEBUFF 100
 
