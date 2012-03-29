@@ -5,7 +5,6 @@
  * contient une demande de chauffage a effectuer.
  */
 public class MessageTemperature implements java.io.Serializable {
-
      /**
       * Constante precisant que le message est de type "mesure"
       * (contient la temperature courante de l'air)

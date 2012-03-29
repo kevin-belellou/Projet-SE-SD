@@ -10,7 +10,9 @@ import java.io.ByteArrayOutputStream;
  * au module Communication Temperature du système central via des sockets TCP
  */
 public class Thermometre {
-
+     /**
+      * Taille maximale des messages
+      */
      static final int TAILLEBUFF = 100;
 
      /**

@@ -10,7 +10,9 @@ import java.io.ByteArrayOutputStream;
  * a Air.java via le groupe multicast de cette piece.
  */
 public class Chauffage {
-
+     /**
+      * Taille maximale des messages
+      */
      static final int TAILLEBUFF = 100;
 
      /**

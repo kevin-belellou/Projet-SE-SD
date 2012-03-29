@@ -121,6 +121,9 @@ void communication_thermometre(int socket, int place)
           memcpy(temperature, message, 4);
 
           printf("%d ; piece : %s ; temperature : %d\n", getpid(), piece, *temperature);
+
+          tabPieces.tabValeurs[place].temperature = *temperature;
+
           nb_octets = read(socket, message, TAILLEBUFF);
      }
      printf("%d : j'exit\n", getpid());
@@ -134,6 +137,8 @@ void communication_chauffage(int socket, int place)
 
      while (1) {
           sleep(1);
+
+          valeur = tabPieces.tabValeurs[place].nivChauffage;
 
           valeur = (rand() % 6);
           printf("%d ; piece : %s ; chauffage : %d\n", getpid(), piece, valeur);

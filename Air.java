@@ -41,7 +41,6 @@ import java.text.DecimalFormat;
  *   toutes les pieces avec la meme valeur.
  */
 public class Air extends Thread {
-
      /**
       * Adresse du groupe multicast de la piece
       */
