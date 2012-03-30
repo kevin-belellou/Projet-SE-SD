@@ -11,10 +11,14 @@ void* traiter_communication(void* socket);
 void communication_thermometre(int socket, int place);
 void communication_chauffage(int socket, int place);
 
+/**
+ * Fonction principale du module de communication
+ * Initie les communications avec les Thermometres et Chauffages
+ */
 void* init_moduleComm(void* port_param)
 {
      // Copie du port
-     // (Dereferencement du cast du pointer void* vers int*)
+     // (Dereferencement du cast du pointeur void* vers int*)
      int port = *((int*)port_param);
 
      // adresse socket cote client
@@ -55,10 +59,15 @@ void* init_moduleComm(void* port_param)
      }
 }
 
+/**
+ * Determine le type de communication (Thermometre ou Chauffage)
+ * et la piece a laquelle la communication se rapporte
+ * Lance ensuite la fonction de communication correspondante
+ */
 void* traiter_communication(void* socket_param)
 {
      // Copie de la socket
-     // (Dereferencement du cast du pointer void* vers int*)
+     // (Dereferencement du cast du pointeur void* vers int*)
      int socket = *((int*)socket_param);
 
      char message[TAILLEBUFF];
@@ -66,25 +75,31 @@ void* traiter_communication(void* socket_param)
      char *piece;
      int *type;
 
+     // Lecture de la socket
      nb_octets = read(socket, message, TAILLEBUFF);
 
+     // Recuperation du nom de la piece
      piece = (char *)malloc((nb_octets - 5 + 1) * sizeof(char));
      memcpy(piece, message + 5, nb_octets - 5);
      piece[nb_octets - 5] = '\0';
 
+     // Recuperation du type de message
      type = (int *)malloc(sizeof(int));
      memcpy(type, message + 4, 1);
 
+     // Lock du mutex
      pthread_mutex_lock(&mutex);
 
+     // Recuperation de la place de la piece dans le tableau des pieces
+     // La piece est ajoutee au tableau si elle n'y etait deja pas
      int place;
      int trouve = existeDansTabPieces(piece);
-
      if (trouve >= 0)
           place = trouve;
      else
           place = aggrandirTabPieces(piece);
 
+     // Unlock du mutex
      pthread_mutex_unlock(&mutex);
 
      if (*type == 0) // Si c'est un message de type MESURE
@@ -99,13 +114,20 @@ void* traiter_communication(void* socket_param)
      // Traitement effectue, fermeture de la socket
      close(socket);
 
+     // Liberation de la memoire et destruction du thread
      free(piece);
      free(type);
      pthread_exit(NULL);
 }
 
+/**
+ * Communication avec les Thermometres
+ * Recupere la valeur courante de la temperature dans la piece
+ * et la place dans le tableau des valeurs correspondant
+ */
 void communication_thermometre(int socket, int place)
 {
+     // Recuperation du nom de la piece
      char *piece = tabPieces.tabValeurs[place].nom;
 
      // Buffer qui contiendra le message reçu
@@ -127,12 +149,21 @@ void communication_thermometre(int socket, int place)
           nb_octets = read(socket, message, TAILLEBUFF);
      }
      printf("%d : j'exit\n", getpid());
+
+     // Liberation donnee
      free(temperature);
 }
 
+/**
+ * Communication avec les Chauffages
+ * Recupere le niveau de chauffage calcule par l'ordonnanceur
+ * et l'envoie au Chauffage
+ */
 void communication_chauffage(int socket, int place)
 {
      int i, valeur;
+
+     // Recuperation du nom de la piece
      char *piece = tabPieces.tabValeurs[place].nom;
 
      while (1) {

@@ -26,10 +26,12 @@ static TabPieces tabPieces = {0, NULL};
 // Declaration et initialisation du mutex
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-// Fonction pour rechercher l'existence d'une piece
-// dans le tableau des pieces
-// Renvoie -1 si la piece n'est pas trouvee,
-// sinon renvoie la place à laquelle la piece se trouve
+/**
+ * Fonction pour rechercher l'existence d'une piece
+ * dans le tableau des pieces
+ * Renvoie -1 si la piece n'est pas trouvee,
+ * sinon renvoie la place à laquelle la piece se trouve
+ */
 int existeDansTabPieces(char *piece)
 {
      int i, trouve = 0;
@@ -46,10 +48,12 @@ int existeDansTabPieces(char *piece)
           return -1;
 }
 
-// Fonction pour aggrandir le tableau de pieces
-// en passant en parametre le nom de la nouvelle piece
-// Renvoie -1 en cas d'erreur lors de la recallocation,
-// sinon renvoie la place à laquelle la nouvelle piece se trouve
+/**
+ * Fonction pour aggrandir le tableau de pieces
+ * en passant en parametre le nom de la nouvelle piece
+ * Renvoie -1 en cas d'erreur lors de la recallocation,
+ * sinon renvoie la place à laquelle la nouvelle piece se trouve
+ */
 int aggrandirTabPieces(char *nom)
 {
      // Reallocation du tableau
