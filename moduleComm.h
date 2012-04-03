@@ -2,7 +2,7 @@
 #define MODULECOMM_H
 
 #include <pthread.h>
-#include "fonctions.h"
+#include "sockets.h"
 #include "memoire.h"
 
 #define TAILLEBUFF 100
