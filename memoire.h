@@ -1,5 +1,5 @@
-#ifndef STRUCTURES_H
-#define STRUCTURES_H
+#ifndef MEMOIRE_H
+#define MEMOIRE_H
 
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +20,7 @@ typedef struct TabPieces {
      Piece* tabValeurs;
 } TabPieces;
 
-// Declaration et initialisation du tableau de pieces
+// Declaration et initialisation du tableau de pieces,
 // utilise par tous les threads
 static TabPieces tabPieces = {0, NULL};
 

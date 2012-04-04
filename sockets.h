@@ -1,5 +1,5 @@
-#ifndef FONCTIONS_H
-#define FONCTIONS_H
+#ifndef SOCKETS_H
+#define SOCKETS_H
 
 #include <stdio.h>
 #include <stdlib.h>

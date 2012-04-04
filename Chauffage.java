@@ -17,7 +17,7 @@ public class Chauffage {
 
      /**
       * Lance le programme Chauffage. Les parametres sont les suivants :
-      * $ java Chauffage groupeMulticast portMulticast nivChauffage
+      * $ java Chauffage groupeMulticast portMulticast piece adrSysteme portSysteme
       *   groupeMulticast: adresse IP du groupe multicast a utiliser pour la piece
       *   portMulticast : port du groupe multicast
       *   piece : nom de la piece
