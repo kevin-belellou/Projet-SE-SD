@@ -11,6 +11,7 @@ typedef struct Piece {
      int temperature;
      int temperatureVoulue;
      int nivChauffage;
+     int nivChauffageVoulu;
 } Piece;
 
 // Definit la structure du tableau de pieces
@@ -71,8 +72,9 @@ int aggrandirTabPieces(char *nom)
      // Initialisation des valeurs de la piece
      strncpy(tabPieces.tabValeurs[tabPieces.nbPieces].nom, nom, 25);
      tabPieces.tabValeurs[tabPieces.nbPieces].temperature = 0;
-     tabPieces.tabValeurs[tabPieces.nbPieces].temperatureVoulue = 0;
+     tabPieces.tabValeurs[tabPieces.nbPieces].temperatureVoulue = -1;
      tabPieces.tabValeurs[tabPieces.nbPieces].nivChauffage = 0;
+     tabPieces.tabValeurs[tabPieces.nbPieces].nivChauffageVoulu = -1;
 
      // Incrementation du nombre de piece
      tabPieces.nbPieces++;
