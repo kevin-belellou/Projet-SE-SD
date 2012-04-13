@@ -52,7 +52,8 @@ void* init_moduleComm(void* port_param)
      pthread_t thread;
      while(1) {
           // Recuperation de la socket
-          socket_service = accept(socket_ecoute, (struct sockaddr *)&addr_client, &lg_addr);
+          socket_service = accept(socket_ecoute, (struct sockaddr*)&addr_client, &lg_addr);
+
 
           // Lancement du thread avec passage de la socket en parametre
           pthread_create(&thread, NULL, traiter_communication, (void*)&socket_service);
@@ -72,19 +73,19 @@ void* traiter_communication(void* socket_param)
 
      char message[TAILLEBUFF];
      int nb_octets;
-     char *piece;
-     int *type;
+     char* piece;
+     int* type;
 
      // Lecture de la socket
      nb_octets = read(socket, message, TAILLEBUFF);
 
      // Recuperation du nom de la piece
-     piece = (char *)malloc((nb_octets - 5 + 1) * sizeof(char));
+     piece = (char*)malloc((nb_octets - 5 + 1) * sizeof(char));
      memcpy(piece, message + 5, nb_octets - 5);
      piece[nb_octets - 5] = '\0';
 
      // Recuperation du type de message
-     type = (int *)malloc(sizeof(int));
+     type = (int*)malloc(sizeof(int));
      memcpy(type, message + 4, 1);
 
      // Lock du mutex
@@ -97,7 +98,8 @@ void* traiter_communication(void* socket_param)
      if (trouve >= 0)
           place = trouve;
      else
-          place = aggrandirTabPieces(piece);
+          place = agrandirTabPieces(piece);
+
 
      // Unlock du mutex
      pthread_mutex_unlock(&mutex);
@@ -108,7 +110,7 @@ void* traiter_communication(void* socket_param)
           communication_chauffage(socket, place);
      else {
           fprintf(stderr, "Type de message non connu\n");
-          exit(-1);
+          pthread_exit(NULL);
      }
 
      // Traitement effectue, fermeture de la socket
@@ -128,27 +130,27 @@ void* traiter_communication(void* socket_param)
 void communication_thermometre(int socket, int place)
 {
      // Recuperation du nom de la piece
-     char *piece = tabPieces.tabValeurs[place].nom;
+     char* piece = tabPieces.tabValeurs[place].nom;
 
      // Buffer qui contiendra le message reçu
      char message[TAILLEBUFF];
 
      // Donnees recues
      int nb_octets;
-     int *temperature;
+     int* temperature;
      temperature = (int *)malloc(sizeof(int));
 
      nb_octets = read(socket, message, TAILLEBUFF);
      while (nb_octets > 0) {
           memcpy(temperature, message, 4);
 
-          printf("%d ; piece : %s ; temperature : %d\n", getpid(), piece, *temperature);
+          printf("piece : %s ; temperature : %d\n", tabPieces.tabValeurs[place].nom, *temperature);
 
           tabPieces.tabValeurs[place].temperature = *temperature;
 
           nb_octets = read(socket, message, TAILLEBUFF);
      }
-     printf("%d : j'exit\n", getpid());
+     printf("%d : j'exit\n", pthread_self());
 
      // Liberation donnee
      free(temperature);
@@ -164,7 +166,7 @@ void communication_chauffage(int socket, int place)
      int i, valeur;
 
      // Recuperation du nom de la piece
-     char *piece = tabPieces.tabValeurs[place].nom;
+     char* piece = tabPieces.tabValeurs[place].nom;
 
      while (1) {
           sleep(1);
@@ -172,11 +174,11 @@ void communication_chauffage(int socket, int place)
           valeur = tabPieces.tabValeurs[place].nivChauffage;
 
           valeur = (rand() % 6);
-          printf("%d ; piece : %s ; chauffage : %d\n", getpid(), piece, valeur);
+          printf("piece : %s ; chauffage : %d\n", piece, valeur);
 
           write(socket, &valeur, sizeof(int));
      }
-     printf("%d : j'exit\n", getpid());
+     printf("%d : j'exit\n", pthread_self());
 }
 
 #endif

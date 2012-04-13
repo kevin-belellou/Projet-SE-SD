@@ -7,17 +7,18 @@
 
 // Definit la structure d'une piece
 typedef struct Piece {
-     char nom[25];
-     int temperature;
-     int temperatureVoulue;
-     int nivChauffage;
-     int nivChauffageVoulu;
+     char nom[25]; // Nom de la pièce
+     int temperature; // Temperature courante de la piece
+     int temperatureVoulue; // Temperature voulue par l'utilisateur, entree dans une console
+     int nivChauffage; // Niveau de chauffage actuel de la piece
+     int nivChauffageVoulu; // Niveau de chauffage voulu par l'utilisateur, entre dans une console
+     int priorite;
 } Piece;
 
 // Definit la structure du tableau de pieces
 typedef struct TabPieces {
-     int nbPieces;
-     Piece* tabValeurs;
+     int nbPieces; // Nombre de pieces dans la tableau
+     Piece* tabValeurs; // Tableau de Pieces
 } TabPieces;
 
 // Declaration et initialisation du tableau de pieces,
@@ -37,6 +38,7 @@ int existeDansTabPieces(char *piece)
 {
      int i, trouve = 0;
 
+     // Parcours du tableau de pieces a la recherche de la piece consideree
      for (i = 0; i < tabPieces.nbPieces; i++)
           if (strcmp(tabPieces.tabValeurs[i].nom, piece) == 0) {
                trouve = 1;
@@ -55,16 +57,17 @@ int existeDansTabPieces(char *piece)
  * Renvoie -1 en cas d'erreur lors de la recallocation,
  * sinon renvoie la place à laquelle la nouvelle piece se trouve
  */
-int aggrandirTabPieces(char *nom)
+int agrandirTabPieces(char *nom)
 {
      // Reallocation du tableau
-     Piece *temp = NULL;
+     Piece* temp = NULL;
      temp = realloc(tabPieces.tabValeurs, (tabPieces.nbPieces + 1) * sizeof(Piece));
 
      // Verification que la reallocation a marché
-     if (temp != NULL)
+     if (temp != NULL) {
+          free(tabPieces.tabValeurs);
           tabPieces.tabValeurs = temp;
-     else {
+     } else {
           perror("Erreur realloc");
           return -1;
      }

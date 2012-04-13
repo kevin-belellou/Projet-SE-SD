@@ -3,7 +3,7 @@
 #include "moduleComm.h"
 #include "ordonnanceur.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
      // Verification des arguments
      if(argc != 2) {
