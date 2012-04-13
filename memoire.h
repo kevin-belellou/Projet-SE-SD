@@ -25,8 +25,9 @@ typedef struct TabPieces {
 // utilise par tous les threads
 static TabPieces tabPieces = {0, NULL};
 
-// Declaration et initialisation du mutex
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+// Declaration et initialisation des mutex
+pthread_mutex_t mutex_memoire = PTHREAD_MUTEX_INITIALIZER; // Mutex pour la mémoire (tableau de pieces)
+pthread_mutex_t mutex_socket = PTHREAD_MUTEX_INITIALIZER; // Mutex pour les sockets (eviter socket double)
 
 /**
  * Fonction pour rechercher l'existence d'une piece
@@ -64,10 +65,9 @@ int agrandirTabPieces(char *nom)
      temp = realloc(tabPieces.tabValeurs, (tabPieces.nbPieces + 1) * sizeof(Piece));
 
      // Verification que la reallocation a marché
-     if (temp != NULL) {
-          free(tabPieces.tabValeurs);
+     if (temp != NULL)
           tabPieces.tabValeurs = temp;
-     } else {
+     else {
           perror("Erreur realloc");
           return -1;
      }

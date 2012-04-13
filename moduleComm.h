@@ -51,6 +51,9 @@ void* init_moduleComm(void* port_param)
      // Declaration d'un thread
      pthread_t thread;
      while(1) {
+          // Lock du mutex_socket pour eviter socket double
+          pthread_mutex_lock(&mutex_socket);
+
           // Recuperation de la socket
           socket_service = accept(socket_ecoute, (struct sockaddr*)&addr_client, &lg_addr);
 
@@ -70,11 +73,12 @@ void* traiter_communication(void* socket_param)
      // Copie de la socket
      // (Dereferencement du cast du pointeur void* vers int*)
      int socket = *((int*)socket_param);
+     printf("%d : socket = %d\n", pthread_self(), socket);
 
      char message[TAILLEBUFF];
      int nb_octets;
      char* piece;
-     int* type;
+     unsigned char type;
 
      // Lecture de la socket
      nb_octets = read(socket, message, TAILLEBUFF);
@@ -85,31 +89,42 @@ void* traiter_communication(void* socket_param)
      piece[nb_octets - 5] = '\0';
 
      // Recuperation du type de message
-     type = (int*)malloc(sizeof(int));
-     memcpy(type, message + 4, 1);
-
-     // Lock du mutex
-     pthread_mutex_lock(&mutex);
+     memcpy(&type, message + 4, 1);
 
      // Recuperation de la place de la piece dans le tableau des pieces
      // La piece est ajoutee au tableau si elle n'y etait deja pas
-     int place;
+     pthread_mutex_lock(&mutex_memoire); // Lock du mutex_memoire
+
+     int place = -1;
      int trouve = existeDansTabPieces(piece);
      if (trouve >= 0)
           place = trouve;
      else
           place = agrandirTabPieces(piece);
 
+     if (place == -1) {
+          fprintf(stderr, "%d : Realloc tableau echouee\n", pthread_self());
+          pthread_exit(NULL);
+     }
 
-     // Unlock du mutex
-     pthread_mutex_unlock(&mutex);
+     pthread_mutex_unlock(&mutex_memoire); // Unlock du mutex_memoire
 
-     if (*type == 0) // Si c'est un message de type MESURE
+     // Unlock du mutex_socket
+     pthread_mutex_unlock(&mutex_socket);
+
+     printf("%d : type = %d\n", pthread_self(), (int)type);
+
+     switch ((int)type) {
+     case 0: // Si c'est un message de type MESURE
+          printf("%d : je suis un thermometre\n", pthread_self());
           communication_thermometre(socket, place);
-     else if (*type == 1) // Si c'est un message de type CHAUFFER
+          break;
+     case 1: // Si c'est un message de type CHAUFFER
+          printf("%d : je suis un chauffage\n", pthread_self());
           communication_chauffage(socket, place);
-     else {
-          fprintf(stderr, "Type de message non connu\n");
+          break;
+     default:
+          fprintf(stderr, "%d : Type de message non connu\n", pthread_self());
           pthread_exit(NULL);
      }
 
@@ -118,7 +133,7 @@ void* traiter_communication(void* socket_param)
 
      // Liberation de la memoire et destruction du thread
      free(piece);
-     free(type);
+     printf("%d : je me suicide\n", pthread_self());
      pthread_exit(NULL);
 }
 
@@ -129,9 +144,6 @@ void* traiter_communication(void* socket_param)
  */
 void communication_thermometre(int socket, int place)
 {
-     // Recuperation du nom de la piece
-     char* piece = tabPieces.tabValeurs[place].nom;
-
      // Buffer qui contiendra le message reçu
      char message[TAILLEBUFF];
 
@@ -144,9 +156,10 @@ void communication_thermometre(int socket, int place)
      while (nb_octets > 0) {
           memcpy(temperature, message, 4);
 
-          printf("piece : %s ; temperature : %d\n", tabPieces.tabValeurs[place].nom, *temperature);
-
+          pthread_mutex_lock(&mutex_memoire);
           tabPieces.tabValeurs[place].temperature = *temperature;
+          printf("piece : %s ; temperature : %d\n", tabPieces.tabValeurs[place].nom, tabPieces.tabValeurs[place].temperature);
+          pthread_mutex_unlock(&mutex_memoire);
 
           nb_octets = read(socket, message, TAILLEBUFF);
      }
@@ -165,16 +178,17 @@ void communication_chauffage(int socket, int place)
 {
      int i, valeur;
 
-     // Recuperation du nom de la piece
-     char* piece = tabPieces.tabValeurs[place].nom;
-
      while (1) {
+          // Attente
           sleep(1);
 
-          valeur = tabPieces.tabValeurs[place].nivChauffage;
-
+          // Recuperation valeur (temporaire)
+          //valeur = tabPieces.tabValeurs[place].nivChauffage;);
           valeur = (rand() % 6);
-          printf("piece : %s ; chauffage : %d\n", piece, valeur);
+
+          pthread_mutex_lock(&mutex_memoire);
+          printf("piece : %s ; chauffage : %d\n", tabPieces.tabValeurs[place].nom, valeur);
+          pthread_mutex_unlock(&mutex_memoire);
 
           write(socket, &valeur, sizeof(int));
      }
