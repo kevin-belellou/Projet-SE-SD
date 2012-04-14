@@ -12,12 +12,16 @@ void calculerChauffage(int piece);
  */
 void* init_ordonnanceur(void* temps_param)
 {
-     // Copie du port
+     // Copie du parametre
      // (Dereferencement du cast du pointeur void* vers int*)
      int temps = *((int*)temps_param);
 
      // Indices de boucle
      int i, j, k;
+
+     // Quantum
+     int quantum = 0;
+     int quantumMax = 10;
 
      // Nombre de pieces actuellement gerees
      int nbPiecesGerees = 0;
@@ -35,12 +39,14 @@ void* init_ordonnanceur(void* temps_param)
      // Taille reelle des files
      int tailleFile[3] = {0};
 
+     // Variables diverses
      int nouvelleFile, pieceTraitee;
 
      while(1) {
           // Attente
           sleep(temps);
 
+          // Lock du mutex_memoire
           pthread_mutex_lock(&mutex_memoire);
 
           // Verifie si les files ont besoin d'etre reallouees
@@ -78,7 +84,55 @@ void* init_ordonnanceur(void* temps_param)
                     nbPiecesGerees = tabPieces.nbPieces;
                }
           }
+
+          // Unlock du mutex_memoire
           pthread_mutex_unlock(&mutex_memoire);
+
+          // Gestion du quantum
+          quantum++;
+
+          if (quantum == quantumMax) {
+               printf("quantum atteint\n");
+               // Lock du mutex_memoire
+               pthread_mutex_lock(&mutex_memoire);
+
+               // Remise a zero des tailles des files
+               for (i = 0; i < 3; i++)
+                    tailleFile[i] = 0;
+
+               // Veillissement des priorites
+               for (j = 0; j < tabPieces.nbPieces; j++) {
+                    // Creation d'un pointeur sur la piece
+                    Piece* pPiece = &tabPieces.tabValeurs[j];
+
+                    // Division par 2 de la priorite
+                    pPiece->priorite /= 2;
+
+                    // Ajout dans la nouvelle file correspondante
+                    file[pPiece->priorite][tailleFile[pPiece->priorite]] = j;
+
+                    // Incrementation de la taille reelle de la file
+                    tailleFile[pPiece->priorite]++;
+               }
+
+               // Unlock du mutex_memoire
+               pthread_mutex_unlock(&mutex_memoire);
+
+               // Remise a zero du quantum
+               quantum = 0;
+          }
+
+          for (i = 0; i < 3; i++) {
+               if (tailleFile[i] == 0) {
+                    printf("file[%d] vide\n", i);
+                    continue;
+               }
+
+               for (j = 0; j < tailleFile[i]; j++) {
+                    printf("file[%d][%d] = %d ; ", i, j, file[i][j]);
+               }
+               printf("\n");
+          }
 
           if (nbPiecesGerees > 0)
                for (i = 0; i < 3; i++)
@@ -86,11 +140,17 @@ void* init_ordonnanceur(void* temps_param)
                          // Recuperation de la piece
                          pieceTraitee = file[i][0];
 
+                         // Lock du mutex_memoire
+                         pthread_mutex_lock(&mutex_memoire);
+
                          // Calcul du chauffage
                          calculerChauffage(pieceTraitee);
 
                          // Determination de la nouvelle file dans laquelle la piece va aller
                          nouvelleFile = determinerFile(pieceTraitee);
+
+                         // Unlock du mutex_memoire
+                         pthread_mutex_unlock(&mutex_memoire);
 
                          // Enlevement de la piece dans l'ancienne file (reecriture)
                          for (k = 1; k < tailleFile[i]; k++)
@@ -116,18 +176,27 @@ void* init_ordonnanceur(void* temps_param)
  */
 int determinerFile(int piece)
 {
-     /*
-     * Temps de derniere maj
-     * Niveau de chauffage voulu
+     // Creation d'un pointeur sur la piece
+     Piece* pPiece = &tabPieces.tabValeurs[piece];
 
-     * T = |T° Voulue - T° Effective|
-     * File 1: T > 3
-     * File 2: 1 < T <= 3
-     * File 3: T <= 1
-     * File 3: T° Voulue < 0
+     if (pPiece->nivChauffageVoulu >= 0) // Si l'utilisateur a ordonne un niveau de chauffage
+          pPiece->priorite = 0;
+     else if (pPiece->temperatureVoulue < 0) // Si l'utilisateur n'a pas ordonne de temperature voulue
+          pPiece->priorite = 2;
+     else {
+          // Calcul de la valeur absolue de la difference entre
+          // la temperature courante et celle voulue par l'utilisateur
+          int diffTemp = abs(pPiece->temperatureVoulue - pPiece->temperature);
 
-     */
-     return 0;
+          if (diffTemp > 3)
+               pPiece->priorite = 0;
+          else if (diffTemp > 1 && diffTemp <= 3)
+               pPiece->priorite = 1;
+          else
+               pPiece->priorite = 2;
+     }
+
+     return pPiece->priorite;
 }
 
 /**
@@ -135,7 +204,19 @@ int determinerFile(int piece)
  */
 void calculerChauffage(int piece)
 {
+     // Creation d'un pointeur sur la piece
+     Piece* pPiece = &tabPieces.tabValeurs[piece];
 
+     // Calcul de la difference entre la temperature courante
+     // et celle voulue par l'utilisateur
+     int diffTemp = pPiece->temperatureVoulue - pPiece->temperature;
+
+     if (diffTemp <= 0) // Si l'on a atteint ou depasse la temperature voulue
+          pPiece->nivChauffage = 0;
+     else if (diffTemp > 0 && diffTemp <= 5) // Si la difference de temperature est inferieure a 5 degres
+          pPiece->nivChauffage = 3;
+     else
+          pPiece->nivChauffage = 5;
 }
 
 #endif

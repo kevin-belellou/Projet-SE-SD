@@ -73,7 +73,6 @@ void* traiter_communication(void* socket_param)
      // Copie de la socket
      // (Dereferencement du cast du pointeur void* vers int*)
      int socket = *((int*)socket_param);
-     printf("%d : socket = %d\n", pthread_self(), socket);
 
      char message[TAILLEBUFF];
      int nb_octets;
@@ -112,15 +111,11 @@ void* traiter_communication(void* socket_param)
      // Unlock du mutex_socket
      pthread_mutex_unlock(&mutex_socket);
 
-     printf("%d : type = %d\n", pthread_self(), (int)type);
-
      switch ((int)type) {
      case 0: // Si c'est un message de type MESURE
-          printf("%d : je suis un thermometre\n", pthread_self());
           communication_thermometre(socket, place);
           break;
      case 1: // Si c'est un message de type CHAUFFER
-          printf("%d : je suis un chauffage\n", pthread_self());
           communication_chauffage(socket, place);
           break;
      default:
@@ -186,10 +181,11 @@ void communication_chauffage(int socket, int place)
           sleep(1);
 
           // Recuperation valeur (temporaire)
-          //valeur = tabPieces.tabValeurs[place].nivChauffage;);
-          valeur = (rand() % 6);
+          //valeur = tabPieces.tabValeurs[place].nivChauffage;
+          //valeur = (rand() % 6);
 
           pthread_mutex_lock(&mutex_memoire);
+          valeur = tabPieces.tabValeurs[place].nivChauffage;
           printf("piece : %s ; chauffage : %d\n", tabPieces.tabValeurs[place].nom, valeur);
           pthread_mutex_unlock(&mutex_memoire);
 
