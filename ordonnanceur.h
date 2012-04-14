@@ -3,14 +3,21 @@
 
 #include "memoire.h"
 
-void* init_ordonnanceur(void* param)
+/**
+ * Fonction principale de l'ordonnanceur
+ * Calcule les valeurs de chauffage pour chaque piece
+ */
+void* init_ordonnanceur(void* temps_param)
 {
+     // Copie du port
+     // (Dereferencement du cast du pointeur void* vers int*)
+     int temps = *((int*)temps_param);
      // Indice de boucle
      int i;
 
      while(1) {
           // Attente
-          sleep(1);
+          sleep(temps);
 
           // Recuperation securisee du nombre de pieces
           pthread_mutex_lock(&mutex_memoire);
@@ -19,11 +26,11 @@ void* init_ordonnanceur(void* param)
           pthread_mutex_unlock(&mutex_memoire);
 
           // Numero de la liste a considerer, et de la piece a chauffer
-//		int majFile = -1;
-//		int majPiece = -1;
+//        int majFile = -1;
+//        int majPiece = -1;
 
           // Creation des files
-//		int	indexFile[3] = {0};
+//        int indexFile[3] = {0};
 //          int* file[3];
 //          for (i = 0; i < 3; ++i)
 //               file[i] = malloc(nombrePieces * sizeof(int));
@@ -41,23 +48,23 @@ void* init_ordonnanceur(void* param)
 
           */
           // Recupere de maniere securise le nombre de piece
-//		for(i = 0; i < nombrePieces; ++i) {
-//			// Recuperation des temperatures, et mise dans la liste
-//			pthread_mutex_lock(&mutex_memoire);
-//			int dT = tabPieces.tabValeurs[i].temperature - tabPieces.tabValeurs[i].temperatureVoulue;
-//			// Mise dans la bonne file de l'indice de la piece
-//			int numFile = (dT > 3 ? 1 : 1 < dT && dT <= 3 ? 2 : 1);
-//			file[numFile][indexFile[numFile]] = i;
-//			pthread_mutex_unlock(&mutex_memoire);
-//		}
+//        for(i = 0; i < nombrePieces; ++i) {
+//             // Recuperation des temperatures, et mise dans la liste
+//             pthread_mutex_lock(&mutex_memoire);
+//             int dT = tabPieces.tabValeurs[i].temperature - tabPieces.tabValeurs[i].temperatureVoulue;
+//             // Mise dans la bonne file de l'indice de la piece
+//             int numFile = (dT > 3 ? 1 : 1 < dT && dT <= 3 ? 2 : 1);
+//             file[numFile][indexFile[numFile]] = i;
+//             pthread_mutex_unlock(&mutex_memoire);
+//        }
 
           // Calcul de la piece a mettre a jour
 
           // Mise a jour de la piece
-//		if (majPiece >= 0) {
-//			pthread_mutex_lock(&mutex_memoire);
-//			pthread_mutex_unlock(&mutex_memoire);
-//		}
+//        if (majPiece >= 0) {
+//             pthread_mutex_lock(&mutex_memoire);
+//             pthread_mutex_unlock(&mutex_memoire);
+//        }
 
           // Liberation des files
 //          for(i = 0; i < 3; ++i)

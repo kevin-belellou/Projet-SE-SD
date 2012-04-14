@@ -157,8 +157,11 @@ void communication_thermometre(int socket, int place)
           memcpy(temperature, message, 4);
 
           pthread_mutex_lock(&mutex_memoire);
+
+          // Enregistrement de la temperature dans la memoire
           tabPieces.tabValeurs[place].temperature = *temperature;
           printf("piece : %s ; temperature : %d\n", tabPieces.tabValeurs[place].nom, tabPieces.tabValeurs[place].temperature);
+
           pthread_mutex_unlock(&mutex_memoire);
 
           nb_octets = read(socket, message, TAILLEBUFF);

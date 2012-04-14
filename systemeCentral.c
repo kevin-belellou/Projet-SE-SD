@@ -12,6 +12,7 @@ int main(int argc, char* argv[])
      }
 
      int port = atoi(argv[1]);
+     int temps = 1;
 
      // Declaration des threads
      const int nbThread = 2;
@@ -19,7 +20,7 @@ int main(int argc, char* argv[])
 
      // Lancement des threads
      pthread_create(&thread[0], NULL, init_moduleComm, (void*)&port);
-     pthread_create(&thread[1], NULL, init_ordonnanceur, NULL);
+     pthread_create(&thread[1], NULL, init_ordonnanceur, (void*)&temps);
 
      // Attente de fin des threads (ne devrait pas arriver en temps normal)
      int i;
