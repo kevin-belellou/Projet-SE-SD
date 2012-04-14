@@ -3,6 +3,9 @@
 
 #include "memoire.h"
 
+int determinerFile(int piece);
+void calculerChauffage(int piece);
+
 /**
  * Fonction principale de l'ordonnanceur
  * Calcule les valeurs de chauffage pour chaque piece
@@ -12,65 +15,127 @@ void* init_ordonnanceur(void* temps_param)
      // Copie du port
      // (Dereferencement du cast du pointeur void* vers int*)
      int temps = *((int*)temps_param);
-     // Indice de boucle
-     int i;
+
+     // Indices de boucle
+     int i, j, k;
+
+     // Nombre de pieces actuellement gerees
+     int nbPiecesGerees = 0;
+
+     // Nombre de reallocations reussies
+     int reallocOK;
+
+     // Files
+     int* file[3];
+
+     // Initialisation des files (necessaire pour les realloc)
+     for (i = 0; i < 3; i++)
+          file[i] = malloc(sizeof(int));
+
+     // Taille reelle des files
+     int tailleFile[3] = {0};
+
+     int nouvelleFile, pieceTraitee;
 
      while(1) {
           // Attente
           sleep(temps);
 
-          // Recuperation securisee du nombre de pieces
           pthread_mutex_lock(&mutex_memoire);
-          int nombrePieces = tabPieces.nbPieces;
-          printf("nbpieces = %d\n", nombrePieces);
+
+          // Verifie si les files ont besoin d'etre reallouees
+          if (tabPieces.nbPieces != 0 && tabPieces.nbPieces != nbPiecesGerees) {
+               reallocOK = 0;
+
+               // Pour chaque file
+               for (i = 0; i < 3; i++) {
+                    // Reallocation
+                    int* temp;
+                    temp = realloc(file[i], tabPieces.nbPieces * sizeof(int));
+
+                    // Verification que la reallocation a marche
+                    if (temp != NULL) {
+                         file[i] = temp;
+                         reallocOK++;
+                    }
+               }
+
+               // Si toutes les reallocations ont marche
+               if (reallocOK == 3) {
+                    // Calcul de la place des nouvelles pieces
+                    for (j = nbPiecesGerees; j < tabPieces.nbPieces; j++) {
+                         // Determination de la file dans laquelle la piece doit se trouver
+                         nouvelleFile = determinerFile(j);
+
+                         // Ajout dans la file
+                         file[nouvelleFile][tailleFile[nouvelleFile]] = j;
+
+                         // Incrementation de la taille reelle de la file
+                         tailleFile[nouvelleFile]++;
+                    }
+
+                    // Mise a jour du nombre de pieces gerees
+                    nbPiecesGerees = tabPieces.nbPieces;
+               }
+          }
           pthread_mutex_unlock(&mutex_memoire);
 
-          // Numero de la liste a considerer, et de la piece a chauffer
-//        int majFile = -1;
-//        int majPiece = -1;
+          if (nbPiecesGerees > 0)
+               for (i = 0; i < 3; i++)
+                    if (tailleFile[i] > 0) {
+                         // Recuperation de la piece
+                         pieceTraitee = file[i][0];
 
-          // Creation des files
-//        int indexFile[3] = {0};
-//          int* file[3];
-//          for (i = 0; i < 3; ++i)
-//               file[i] = malloc(nombrePieces * sizeof(int));
+                         // Calcul du chauffage
+                         calculerChauffage(pieceTraitee);
 
-          // Verifications a faire :
-          /*
-          * Temps de derniere maj
-          * Niveau de chauffage voulu
+                         // Determination de la nouvelle file dans laquelle la piece va aller
+                         nouvelleFile = determinerFile(pieceTraitee);
 
-          * T = (T° Voulue - T° Effective)
-          * File 1: T > 3
-          * File 2: 1 < T <= 3
-          * File 3: T <= 1
-          * File 3: T° Voulue < 0
+                         // Enlevement de la piece dans l'ancienne file (reecriture)
+                         for (k = 1; k < tailleFile[i]; k++)
+                              file[i][k -1] = file[i][k];
 
-          */
-          // Recupere de maniere securise le nombre de piece
-//        for(i = 0; i < nombrePieces; ++i) {
-//             // Recuperation des temperatures, et mise dans la liste
-//             pthread_mutex_lock(&mutex_memoire);
-//             int dT = tabPieces.tabValeurs[i].temperature - tabPieces.tabValeurs[i].temperatureVoulue;
-//             // Mise dans la bonne file de l'indice de la piece
-//             int numFile = (dT > 3 ? 1 : 1 < dT && dT <= 3 ? 2 : 1);
-//             file[numFile][indexFile[numFile]] = i;
-//             pthread_mutex_unlock(&mutex_memoire);
-//        }
+                         // Decrementation de la taille reelle de l'ancienne file
+                         tailleFile[i]--;
 
-          // Calcul de la piece a mettre a jour
+                         // Ajout de la piece dans la nouvelle file
+                         file[nouvelleFile][tailleFile[nouvelleFile]] = pieceTraitee;
 
-          // Mise a jour de la piece
-//        if (majPiece >= 0) {
-//             pthread_mutex_lock(&mutex_memoire);
-//             pthread_mutex_unlock(&mutex_memoire);
-//        }
+                         // Incrementation de la taille reelle de la nouvelle file
+                         tailleFile[nouvelleFile]++;
 
-          // Liberation des files
-//          for(i = 0; i < 3; ++i)
-//               free(file[i]);
-          //free(file);
+                         // Sortie du for
+                         break;
+                    }
      }
+}
+
+/**
+ * Determine dans quelle file de priorite une piece doit etre placee
+ */
+int determinerFile(int piece)
+{
+     /*
+     * Temps de derniere maj
+     * Niveau de chauffage voulu
+
+     * T = |T° Voulue - T° Effective|
+     * File 1: T > 3
+     * File 2: 1 < T <= 3
+     * File 3: T <= 1
+     * File 3: T° Voulue < 0
+
+     */
+     return 0;
+}
+
+/**
+ * Determine le niveau de chauffage a appliquer pour une piece
+ */
+void calculerChauffage(int piece)
+{
+
 }
 
 #endif
