@@ -75,7 +75,7 @@ int agrandirTabPieces(char *nom)
      // Initialisation des valeurs de la piece
      strncpy(tabPieces.tabValeurs[tabPieces.nbPieces].nom, nom, 25);
      tabPieces.tabValeurs[tabPieces.nbPieces].temperature = 0;
-     tabPieces.tabValeurs[tabPieces.nbPieces].temperatureVoulue = 20;
+     tabPieces.tabValeurs[tabPieces.nbPieces].temperatureVoulue = 15;
      tabPieces.tabValeurs[tabPieces.nbPieces].nivChauffage = 0;
      tabPieces.tabValeurs[tabPieces.nbPieces].nivChauffageVoulu = -1;
      tabPieces.tabValeurs[tabPieces.nbPieces].priorite = 0;

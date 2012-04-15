@@ -2,6 +2,7 @@
 #define MODULECOMM_H
 
 #include <pthread.h>
+#include <signal.h>
 #include "sockets.h"
 #include "memoire.h"
 
@@ -73,6 +74,7 @@ void* traiter_communication(void* socket_param)
      // Copie de la socket
      // (Dereferencement du cast du pointeur void* vers int*)
      int socket = *((int*)socket_param);
+     printf("%d : socket = %d\n", pthread_self(), socket);
 
      char message[TAILLEBUFF];
      int nb_octets;
@@ -96,26 +98,28 @@ void* traiter_communication(void* socket_param)
 
      int place = -1;
      int trouve = existeDansTabPieces(piece);
-     if (trouve >= 0)
+     if (trouve >= 0) // Si la piece existe deja dans le tableau
           place = trouve;
-     else
+     else // Sinon
           place = agrandirTabPieces(piece);
 
      if (place == -1) {
           fprintf(stderr, "%d : Realloc tableau echouee\n", pthread_self());
           pthread_exit(NULL);
      }
-
-     pthread_mutex_unlock(&mutex_memoire); // Unlock du mutex_memoire
+     // Unlock du mutex_memoire
+     pthread_mutex_unlock(&mutex_memoire);
 
      // Unlock du mutex_socket
      pthread_mutex_unlock(&mutex_socket);
 
      switch ((int)type) {
      case 0: // Si c'est un message de type MESURE
+          printf("%d = thermometre\n", pthread_self());
           communication_thermometre(socket, place);
           break;
      case 1: // Si c'est un message de type CHAUFFER
+          printf("%d = chauffage\n", pthread_self());
           communication_chauffage(socket, place);
           break;
      default:
@@ -143,28 +147,23 @@ void communication_thermometre(int socket, int place)
      char message[TAILLEBUFF];
 
      // Donnees recues
-     int nb_octets;
-     int* temperature;
-     temperature = (int *)malloc(sizeof(int));
+     int nb_octets, temperature;
 
      nb_octets = read(socket, message, TAILLEBUFF);
      while (nb_octets > 0) {
-          memcpy(temperature, message, 4);
+          memcpy(&temperature, message, 4);
 
           pthread_mutex_lock(&mutex_memoire);
 
           // Enregistrement de la temperature dans la memoire
-          tabPieces.tabValeurs[place].temperature = *temperature;
+          tabPieces.tabValeurs[place].temperature = temperature;
           printf("piece : %s ; temperature : %d\n", tabPieces.tabValeurs[place].nom, tabPieces.tabValeurs[place].temperature);
 
           pthread_mutex_unlock(&mutex_memoire);
 
           nb_octets = read(socket, message, TAILLEBUFF);
      }
-     printf("%d : j'exit\n", pthread_self());
-
-     // Liberation donnee
-     free(temperature);
+     printf("%d (thermometre) : j'exit\n", pthread_self());
 }
 
 /**
@@ -174,24 +173,32 @@ void communication_thermometre(int socket, int place)
  */
 void communication_chauffage(int socket, int place)
 {
-     int i, valeur;
+     // Niveau de chauffage
+     int valeur = 0;
 
-     while (1) {
+     // Nombre d'octets envoyes
+     int nb_octets = write(socket, &valeur, sizeof(int));
+
+     // Handler pour le signal SIGPIPE
+     // Previent un crash du systeme en cas de broken pipe
+     signal(SIGPIPE, SIG_IGN);
+
+     while (nb_octets > 0) {
           // Attente
           sleep(1);
 
-          // Recuperation valeur (temporaire)
-          //valeur = tabPieces.tabValeurs[place].nivChauffage;
-          //valeur = (rand() % 6);
-
           pthread_mutex_lock(&mutex_memoire);
+
+          // Recuperation de la valeur depuis la memoire
           valeur = tabPieces.tabValeurs[place].nivChauffage;
           printf("piece : %s ; chauffage : %d\n", tabPieces.tabValeurs[place].nom, valeur);
+
           pthread_mutex_unlock(&mutex_memoire);
 
-          write(socket, &valeur, sizeof(int));
+          // Envoi du niveau de chauffage a Air
+          nb_octets = write(socket, &valeur, sizeof(int));
      }
-     printf("%d : j'exit\n", pthread_self());
+     printf("%d (chauffage) : j'exit\n", pthread_self());
 }
 
 #endif

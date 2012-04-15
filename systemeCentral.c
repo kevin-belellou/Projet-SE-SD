@@ -11,8 +11,11 @@ int main(int argc, char* argv[])
           return -1;
      }
 
+     // Port d'ecoute pour le module de communication
      int port = atoi(argv[1]);
-     int temps = 1;
+
+     // Quantum de temps pour l'ordonnanceur
+     int temps = 3;
 
      // Declaration des threads
      const int nbThread = 2;

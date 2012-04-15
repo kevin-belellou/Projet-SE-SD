@@ -21,7 +21,7 @@ void* init_ordonnanceur(void* temps_param)
 
      // Quantum
      int quantum = 0;
-     int quantumMax = 10;
+     int quantumMax = 3;
 
      // Nombre de pieces actuellement gerees
      int nbPiecesGerees = 0;
@@ -195,7 +195,6 @@ int determinerFile(int piece)
           else
                pPiece->priorite = 2;
      }
-
      return pPiece->priorite;
 }
 
