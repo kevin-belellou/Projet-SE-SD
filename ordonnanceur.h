@@ -101,7 +101,7 @@ void* init_ordonnanceur(void* temps_param)
                     tailleFile[i] = 0;
 
                // Veillissement des priorites
-               for (j = 0; j < tabPieces.nbPieces; j++) {
+               for (j = 0; j < nbPiecesGerees; j++) {
                     // Creation d'un pointeur sur la piece
                     Piece* pPiece = &tabPieces.tabValeurs[j];
 
