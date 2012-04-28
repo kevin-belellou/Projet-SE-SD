@@ -128,8 +128,8 @@ void* init_ordonnanceur(void* temps_param)
                     continue;
                }
 
-               for (j = 0; j < tailleFile[i]; j++) {
-                    printf("file[%d][%d] = %d ; ", i, j, file[i][j]);
+               for (k = 0; k < tailleFile[i]; k++) {
+                    printf("file[%d][%d] = %d ; ", i, k, file[i][k]);
                }
                printf("\n");
           }
