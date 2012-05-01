@@ -16,14 +16,14 @@ int creerSocketUDP(int port)
      int sock;
      static struct sockaddr_in addr;
 
-     // création d'une socket UDP
+     // creation d'une socket UDP
      sock = socket(AF_INET, SOCK_DGRAM, 0);
      if (sock == -1) {
           perror("erreur création socket");
           return -1;
      }
 
-     // liaison de la socket sur le port local passé en paramètre
+     // liaison de la socket sur le port local passé en parametre
      bzero(&addr, sizeof(struct sockaddr_in));
      addr.sin_family = AF_INET;
      addr.sin_port = htons(port);
@@ -42,14 +42,14 @@ int creerSocketTCP(int port)
      int sock;
      static struct sockaddr_in addr;
 
-     // création d'une socket TCP
+     // creation d'une socket TCP
      sock = socket(AF_INET, SOCK_STREAM, 0);
      if (sock == -1) {
           perror("erreur création socket");
           return -1;
      }
 
-     // liaison de la socket sur le port local passé en paramètre
+     // liaison de la socket sur le port local passé en parametre
      bzero(&addr, sizeof(struct sockaddr_in));
      addr.sin_family = AF_INET;
      addr.sin_port = htons(port);

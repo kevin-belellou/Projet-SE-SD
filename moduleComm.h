@@ -1,6 +1,7 @@
 #ifndef MODULECOMM_H
 #define MODULECOMM_H
 
+#include <stdio.h>
 #include <pthread.h>
 #include <signal.h>
 #include "sockets.h"
@@ -24,9 +25,6 @@ void* init_moduleComm(void* port_param)
 
      // adresse socket cote client
      static struct sockaddr_in addr_client;
-
-     // adresse socket locale
-     static struct sockaddr_in addr_serveur;
 
      // longueur adresse
      int lg_addr;
@@ -56,8 +54,7 @@ void* init_moduleComm(void* port_param)
           pthread_mutex_lock(&mutex_socket);
 
           // Recuperation de la socket
-          socket_service = accept(socket_ecoute, (struct sockaddr*)&addr_client, &lg_addr);
-
+          socket_service = accept(socket_ecoute, (struct sockaddr*)&addr_client, (socklen_t*)&lg_addr);
 
           // Lancement du thread avec passage de la socket en parametre
           pthread_create(&thread, NULL, traiter_communication, (void*)&socket_service);
@@ -74,7 +71,7 @@ void* traiter_communication(void* socket_param)
      // Copie de la socket
      // (Dereferencement du cast du pointeur void* vers int*)
      int socket = *((int*)socket_param);
-     printf("%d : socket = %d\n", pthread_self(), socket);
+     printf("%d : socket = %d\n", (int)pthread_self(), socket);
 
      char message[TAILLEBUFF];
      int nb_octets;
@@ -104,7 +101,7 @@ void* traiter_communication(void* socket_param)
           place = agrandirTabPieces(piece);
 
      if (place == -1) {
-          fprintf(stderr, "%d : Realloc tableau echouee\n", pthread_self());
+          fprintf(stderr, "%d : Realloc tableau echouee\n", (int)pthread_self());
           pthread_exit(NULL);
      }
      // Unlock du mutex_memoire
@@ -115,15 +112,15 @@ void* traiter_communication(void* socket_param)
 
      switch ((int)type) {
      case 0: // Si c'est un message de type MESURE
-          printf("%d = thermometre\n", pthread_self());
+          printf("%d = thermometre\n", (int)pthread_self());
           communication_thermometre(socket, place);
           break;
      case 1: // Si c'est un message de type CHAUFFER
-          printf("%d = chauffage\n", pthread_self());
+          printf("%d = chauffage\n", (int)pthread_self());
           communication_chauffage(socket, place);
           break;
      default:
-          fprintf(stderr, "%d : Type de message non connu\n", pthread_self());
+          fprintf(stderr, "%d : Type de message non connu\n", (int)pthread_self());
           pthread_exit(NULL);
      }
 
@@ -132,7 +129,7 @@ void* traiter_communication(void* socket_param)
 
      // Liberation de la memoire et destruction du thread
      free(piece);
-     printf("%d : je me suicide\n", pthread_self());
+     printf("%d : je me suicide\n", (int)pthread_self());
      pthread_exit(NULL);
 }
 
@@ -163,7 +160,7 @@ void communication_thermometre(int socket, int place)
 
           nb_octets = read(socket, message, TAILLEBUFF);
      }
-     printf("%d (thermometre) : j'exit\n", pthread_self());
+     printf("%d (thermometre) : j'exit\n", (int)pthread_self());
 }
 
 /**
@@ -198,7 +195,7 @@ void communication_chauffage(int socket, int place)
           // Envoi du niveau de chauffage a Air
           nb_octets = write(socket, &valeur, sizeof(int));
      }
-     printf("%d (chauffage) : j'exit\n", pthread_self());
+     printf("%d (chauffage) : j'exit\n", (int)pthread_self());
 }
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef MEMOIRE_H
 #define MEMOIRE_H
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>

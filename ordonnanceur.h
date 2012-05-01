@@ -1,6 +1,7 @@
 #ifndef ORDONNANCEUR_H
 #define ORDONNANCEUR_H
 
+#include <stdio.h>
 #include "memoire.h"
 
 int determinerFile(int piece);
