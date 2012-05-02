@@ -80,22 +80,92 @@ void* init_gestionConsole(void* param)
 
                     taille += tailleNomPiece + 5 * 4;
                }
-               printf("taille = %d\n", taille);
+
                pthread_mutex_unlock(&mutex_memoire);
                break;
+          case 1: // Si c'est GET_NOMS
+               pthread_mutex_lock(&mutex_memoire);
+
+               memcpy(reponse, &tabPieces.nbPieces, sizeof(int));
+               taille = 4;
+
+               for (i = 0; i < tabPieces.nbPieces; i++) {
+                    strcpy(nomPiece, tabPieces.tabValeurs[i].nom);
+                    tailleNomPiece = strlen(nomPiece);
+
+                    memcpy(reponse + taille, &tailleNomPiece, sizeof(int));
+                    memcpy(reponse + taille + 4, nomPiece, tailleNomPiece);
+
+                    taille += tailleNomPiece + 4;
+               }
+
+               pthread_mutex_unlock(&mutex_memoire);
+               break;
+          case 2: { // Si c'est SET_TEMP
+               taille = 1;
+               int resultat = 0;
+               memcpy(reponse, &resultat, sizeof(int));
+
+               // Recuperation du nom de la piece
+               char* piece = (char*)malloc((nb_octets - 5 + 1) * sizeof(char));
+               memcpy(piece, buffer + 5, nb_octets - 5);
+               piece[nb_octets - 5] = '\0';
+
+               // Recuperation temperature
+               int temperature;
+               memcpy(&temperature, buffer + 1, 4);
+
+               pthread_mutex_lock(&mutex_memoire);
+
+               int place = -1;
+               int trouve = existeDansTabPieces(piece);
+               if (trouve >= 0) // Si la piece existe dans le tableau
+                    place = trouve;
+               else {// Sinon
+                    pthread_mutex_unlock(&mutex_memoire);
+                    break;
+               }
+
+               tabPieces.tabValeurs[place].temperatureVoulue = temperature;
+               resultat = 1;
+               memcpy(reponse, &resultat, sizeof(int));
+
+               pthread_mutex_unlock(&mutex_memoire);
+               break;
+               }
+          case 3: { // Si c'est SET_NIV
+               taille = 1;
+               int resultat = 0;
+               memcpy(reponse, &resultat, sizeof(int));
+
+               // Recuperation du nom de la piece
+               char* piece = (char*)malloc((nb_octets - 5 + 1) * sizeof(char));
+               memcpy(piece, buffer + 5, nb_octets - 5);
+               piece[nb_octets - 5] = '\0';
+
+               // Recuperation temperature
+               int niveau;
+               memcpy(&niveau, buffer + 1, 4);
+
+               pthread_mutex_lock(&mutex_memoire);
+
+               int place = -1;
+               int trouve = existeDansTabPieces(piece);
+               if (trouve >= 0) // Si la piece existe dans le tableau
+                    place = trouve;
+               else {// Sinon
+                    pthread_mutex_unlock(&mutex_memoire);
+                    break;
+               }
+
+               tabPieces.tabValeurs[place].nivChauffageVoulu = niveau;
+               resultat = 1;
+               memcpy(reponse, &resultat, sizeof(int));
+
+               pthread_mutex_unlock(&mutex_memoire);
+               break;
+               }
           }
-
-//          // affichage message recu et coordonnees emetteur
-//          chaine = (char*)malloc((nb_octets + 1) * sizeof(char));
-//          memcpy(chaine, buffer, nb_octets);
-//          chaine[nb_octets] = '\0';
-//          printf("recu message %s de la part de %s depuis le port %d\n", chaine, host_client->h_name, ntohs(addr_client.sin_port));
-
-//          free(chaine);
-
-//pthread_mutex_lock(&mutex_memoire);
-//reponse = tabPieces.tabValeurs[0].nom;
-//pthread_mutex_unlock(&mutex_memoire);
 
           // envoi de la reponse a l'emetteur
           nb_octets = sendto(sock, reponse, taille, 0, (struct sockaddr*)&addr_client, lg);

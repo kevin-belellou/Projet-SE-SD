@@ -5,7 +5,7 @@ public interface ConsoleInterface extends Remote {
 
      public String[] getNoms() throws RemoteException;
 
-     public int setTemperatureVoulue(int temp, String piece) throws RemoteException;
+     public boolean setTemperatureVoulue(int temp, String piece) throws RemoteException;
 
-     public int setNivChauffageVoulu(int niv, String piece) throws RemoteException;
+     public boolean setNivChauffageVoulu(int niv, String piece) throws RemoteException;
 }

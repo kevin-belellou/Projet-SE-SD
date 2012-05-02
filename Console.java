@@ -22,11 +22,6 @@ public class Console extends UnicastRemoteObject implements ConsoleInterface {
 
      public String[] getInfos() throws RemoteException
      {
-          return null;
-     }
-
-     public String[] getNoms() throws RemoteException
-     {
           byte[] data = new byte[1];
           data[0] = Console.GET_INFOS;
           String[] resultat = null;
@@ -62,14 +57,104 @@ public class Console extends UnicastRemoteObject implements ConsoleInterface {
           return resultat;
      }
 
-     public int setTemperatureVoulue(int temp, String piece) throws RemoteException
+     public String[] getNoms() throws RemoteException
      {
-          return 0;
+          byte[] data = new byte[1];
+          data[0] = Console.GET_NOMS;
+          String[] resultat = null;
+
+          HashMap retour;
+          retour = this.envoyerEtRecevoir(data);
+
+          if (!retour.isEmpty()) {
+               Object[] key = retour.keySet().toArray();
+               Integer tailleTableau = new Integer((Integer)key[0]);
+
+               Object value = retour.get(key[0]);
+               byte[] valeurs = (byte[])value;
+
+               Integer nbPieces = new Integer(this.convertirInt(valeurs, 0));
+               resultat = new String[nbPieces];
+
+               int cpt = 4, i = 0;
+               while (cpt < tailleTableau) {
+                    Integer tailleNomPiece = new Integer(this.convertirInt(valeurs, cpt));
+                    cpt += 4;
+
+                    resultat[i++] = new String(valeurs, cpt, tailleNomPiece);
+                    cpt += tailleNomPiece;
+               }
+          }
+
+          return resultat;
      }
 
-     public int setNivChauffageVoulu(int niv, String piece) throws RemoteException
+     public boolean setTemperatureVoulue(int temp, String piece) throws RemoteException
      {
-          return 0;
+          byte[] data = new byte[5 + piece.length()];
+          data[0] = Console.SET_TEMP;
+          boolean resultat = false;
+
+          for (int i = 0; i < 4; i++) {
+               data[i + 1] = (byte) (temp & 0x000000FF);
+               temp = temp >>> 8;
+          }
+
+          byte[] tabPiece = piece.getBytes();
+          for (int i = 0; i < piece.length(); i++)
+               data[i + 5] = tabPiece[i];
+
+          HashMap retour;
+          retour = this.envoyerEtRecevoir(data);
+
+          if (!retour.isEmpty()) {
+               Object[] key = retour.keySet().toArray();
+               Integer tailleTableau = new Integer((Integer)key[0]);
+
+               Object value = retour.get(key[0]);
+               byte[] valeurs = (byte[])value;
+
+               Integer valeurRetournee = new Integer(this.convertirInt(valeurs, 0));
+
+               if (valeurRetournee == 1)
+                    resultat = true;
+          }
+
+          return resultat;
+     }
+
+     public boolean setNivChauffageVoulu(int niv, String piece) throws RemoteException
+     {
+          byte[] data = new byte[5 + piece.length()];
+          data[0] = Console.SET_NIV;
+          boolean resultat = false;
+
+          for (int i = 0; i < 4; i++) {
+               data[i + 1] = (byte) (niv & 0x000000FF);
+               niv = niv >>> 8;
+          }
+
+          byte[] tabPiece = piece.getBytes();
+          for (int i = 0; i < piece.length(); i++)
+               data[i + 5] = tabPiece[i];
+
+          HashMap retour;
+          retour = this.envoyerEtRecevoir(data);
+
+          if (!retour.isEmpty()) {
+               Object[] key = retour.keySet().toArray();
+               Integer tailleTableau = new Integer((Integer)key[0]);
+
+               Object value = retour.get(key[0]);
+               byte[] valeurs = (byte[])value;
+
+               Integer valeurRetournee = new Integer(this.convertirInt(valeurs, 0));
+
+               if (valeurRetournee == 1)
+                    resultat = true;
+          }
+
+          return resultat;
      }
 
      public static void main(String argv[])

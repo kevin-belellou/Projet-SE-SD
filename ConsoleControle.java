@@ -12,7 +12,7 @@ public class ConsoleControle {
 			Scanner sc = new Scanner(System.in);
 			String choix = null;
 			while(true) {
-				sc.nextLine();
+                    choix = null;
 				System.out.println("+=================================================+");
 				System.out.println("| Tapez \"reset\" pour remettre à jour les pièces |");
 				System.out.println("|     Sinon choississez la pièce par son nom      |");
@@ -26,28 +26,28 @@ public class ConsoleControle {
 				System.out.println("<- - - - - - - - - - - - - - - - - - - - - - - - ->");
 				choix = sc.nextLine();
 				boolean reset = (choix.compareToIgnoreCase("reset") == 0);
-				boolean pieceValide = false;
+				boolean pieceTrouve = false;
 				int i = 0;
-				while(i < piece.length || pieceValide) {
+				while(i < piece.length && !pieceTrouve) {
 					//Tester si le nom de la pièce est correct
 					if(choix.compareToIgnoreCase(piece[i]) == 0)
-						pieceValide = true;
+						pieceTrouve = true;
 					++i;
 				}
 
 				if(reset) {
 					//Ne rien faire pour re-afficher la liste
-				} else if(pieceValide) {
+				} else if(pieceTrouve) {
 					//Choix contient la pièce valide
 					//Regler temperature ou niv chauffage
-					sc.nextLine();
+					//sc.nextLine();
 					System.out.println("+==================================================+");
 					System.out.println("| Tapez \"1\" pour spécifier la temperature voulue |");
 					System.out.println("|  Tapez \"2\" pour spécifier le chauffage voulue  |");
 					System.out.println("|  		Puis entrez la valeur souhaitée		 |");
 					System.out.println("+==================================================+");
 					int choixEntier = sc.nextInt();
-					sc.nextLine();
+					//sc.nextLine();
 					//Faire la bonne opération
 					if(choixEntier == 1) {
 						//Récupération de la valeur
@@ -56,6 +56,8 @@ public class ConsoleControle {
 						if(c.setTemperatureVoulue(val, choix))
 							System.out.println("\t\t> Opération effectuée ! < ");
 						else System.out.println("\t\t> Une erreur est survenue ! < ");
+						System.out.println("\t\t> Appuyez sur une touche < ");
+				          sc.nextLine();
 					} else if(choixEntier== 2) {
 						//Récupération de la valeur
 						int val = sc.nextInt();
@@ -63,6 +65,8 @@ public class ConsoleControle {
 						if(c.setNivChauffageVoulu(val, choix))
 							System.out.println("\t\t> Opération effectuée ! < ");
 						else System.out.println("\t\t> Une erreur est survenue ! < ");
+						System.out.println("\t\t> Appuyez sur une touche < ");
+				          sc.nextLine();
 					} else {
 						System.out.println("\t\t> Le numéro ne correspond pas ! < ");
 					}
