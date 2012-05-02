@@ -1,15 +1,21 @@
 import java.rmi.*;
 import java.rmi.registry.*;
-
 import java.lang.Thread.*;
 
 public class ConsoleAffichage {
      public static void main(String argv[])
      {
+          // Verification des arguments
+          if (argv.length != 1) {
+               System.err.println("Erreur dans les arguments !");
+               System.err.println("Usage : $ java -Djava.security.policy=java.policy ConsoleAffichage adrServeurRMI");
+               System.exit(1);
+          }
+
           try {
                System.setSecurityManager(new RMISecurityManager());
 
-               ConsoleInterface c = (ConsoleInterface)Naming.lookup("Console");
+               ConsoleInterface c = (ConsoleInterface)Naming.lookup("//" + argv[0] + "/Console");
 
                while (true) {
                     Thread.sleep(3000);
@@ -33,7 +39,7 @@ public class ConsoleAffichage {
                          System.out.println("\n");
 				}
 
-                    System.out.println("\n----------------------------------------------\n");
+                    System.out.println("----------------------------------------------\n");
                }
           } catch(Exception e) {
                e.printStackTrace();

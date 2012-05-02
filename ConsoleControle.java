@@ -1,14 +1,21 @@
-import java.util.Scanner; 
 import java.rmi.*;
 import java.rmi.registry.*;
+import java.util.Scanner;
 
 public class ConsoleControle {
      public static void main(String argv[])
      {
+          // Verification des arguments
+          if (argv.length != 1) {
+               System.err.println("Erreur dans les arguments !");
+               System.err.println("Usage : $ java -Djava.security.policy=java.policy ConsoleControle adrServeurRMI");
+               System.exit(1);
+          }
+
           try {
                System.setSecurityManager(new RMISecurityManager());
 
-               ConsoleInterface c = (ConsoleInterface)Naming.lookup("Console");
+               ConsoleInterface c = (ConsoleInterface)Naming.lookup("//" + argv[0] + "/Console");
 			Scanner sc = new Scanner(System.in);
 			String choix = null;
 			while(true) {
