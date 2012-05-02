@@ -48,12 +48,21 @@ public class ConsoleControle {
 					System.out.println("+==================================================+");
 					int choixEntier = sc.nextInt();
 					sc.nextLine();
+					//Faire la bonne opération
 					if(choixEntier == 1) {
+						//Récupération de la valeur
 						int val = sc.nextInt();
-						c.setTemperatureVoulue(val, choix);
+						//Test du bon déourlement de la méthode
+						if(c.setTemperatureVoulue(val, choix))
+							System.out.println("\t\t> Opération effectuée ! < ");
+						else System.out.println("\t\t> Une erreur est survenue ! < ");
 					} else if(choixEntier== 2) {
+						//Récupération de la valeur
 						int val = sc.nextInt();
-						c.setNivChauffageVoulu(val, choix);
+						//Test du bon déourlement de la méthode
+						if(c.setNivChauffageVoulu(val, choix))
+							System.out.println("\t\t> Opération effectuée ! < ");
+						else System.out.println("\t\t> Une erreur est survenue ! < ");
 					} else {
 						System.out.println("\t\t> Le numéro ne correspond pas ! < ");
 					}
