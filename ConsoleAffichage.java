@@ -19,15 +19,15 @@ public class ConsoleAffichage {
 
                while (true) {
                     Thread.sleep(3000);
-                    
-				//Renvoie un tableau de:
-				/*
-				* nom;
-				* temp;
-				* tempVoulue
-				* nivChauffage
-				* nivChauffageVoulu
-				*/
+
+                    //Renvoie un tableau de:
+                    /*
+                    * nom;
+                    * temp;
+                    * tempVoulue
+                    * nivChauffage
+                    * nivChauffageVoulu
+                    */
                     String[] resultat = c.getInfos();
 
                     for(int k = 0; k < resultat.length; k+=5) {
@@ -37,7 +37,7 @@ public class ConsoleAffichage {
                          System.out.println(" \t> Niv. Chauffage     = " + resultat[k+3]);
                          System.out.println(" \t> Niv. Chauff Voulu  = " + resultat[k+4]);
                          System.out.println("\n");
-				}
+                    }
 
                     System.out.println("----------------------------------------------\n");
                }

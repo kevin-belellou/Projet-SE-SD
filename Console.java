@@ -15,9 +15,20 @@ public class Console extends UnicastRemoteObject implements ConsoleInterface {
 
      protected static final byte SET_NIV = 3;
 
-     public Console() throws RemoteException
+     protected static InetAddress adrServeur;
+
+     protected static int portServeur;
+
+     public Console(String adr, int port) throws RemoteException
      {
           super();
+
+          try {
+               this.adrServeur = InetAddress.getByName(adr);
+               this.portServeur = port;
+          } catch (Exception e) {
+               e.printStackTrace();
+          }
      }
 
      public String[] getInfos() throws RemoteException
@@ -159,12 +170,19 @@ public class Console extends UnicastRemoteObject implements ConsoleInterface {
 
      public static void main(String argv[])
      {
+          // Verification des arguments
+          if (argv.length != 2) {
+               System.err.println("Erreur dans les arguments !");
+               System.err.println("Usage : $ java -Djava.security.policy=java.policy Console adrServeurUDP portServeurUDP");
+               System.exit(1);
+          }
+
           try {
                System.setSecurityManager(new RMISecurityManager());
 
                LocateRegistry.createRegistry(1099);
 
-               Console c = new Console();
+               Console c = new Console(argv[0], Integer.valueOf(argv[1]));
                Naming.bind("Console", c);
 
                System.out.println("Ready");
@@ -176,25 +194,21 @@ public class Console extends UnicastRemoteObject implements ConsoleInterface {
      protected HashMap envoyerEtRecevoir(byte[] dataAEnvoyer)
      {
           HashMap<Integer, byte[]> valeurRetour = new HashMap<Integer, byte[]>(1);
-          try
-          {
+          try {
                byte[] dataRecue = new byte[TAILLEBUFF];
-               InetAddress adr;
+               
                DatagramPacket packetAEnvoyer;
                DatagramPacket packetRecu = new DatagramPacket(dataRecue, dataRecue.length);
                DatagramSocket socket;
 
-               // adr contient l'@IP de la partie serveur
-               adr = InetAddress.getByName("localhost");
-
                // création du paquet avec les données et en précisant l'adresse du serveur
-               packetAEnvoyer = new DatagramPacket(dataAEnvoyer, dataAEnvoyer.length, adr, 13000);
+               packetAEnvoyer = new DatagramPacket(dataAEnvoyer, dataAEnvoyer.length, this.adrServeur, this.portServeur);
 
                // création d'une socket, sans la lier à un port particulier
                socket = new DatagramSocket();
 
                socket.setSoTimeout(500);
-                
+
                int nb_octets = 0, cpt = 0;
                boolean reussi = true;
 

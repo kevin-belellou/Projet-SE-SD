@@ -6,8 +6,12 @@
 
 #define TAILLEBUF 200
 
-void* init_gestionConsole(void* param)
+void* init_gestionConsole(void* port_param)
 {
+     // Copie du port
+     // (Dereferencement du cast du pointeur void* vers int*)
+     int port = *((int*)port_param);
+
      // adresse de la socket cote serveur
      static struct sockaddr_in addr_client;
 
@@ -21,7 +25,7 @@ void* init_gestionConsole(void* param)
      int sock;
 
      // Creation de la socket et bind via functions.h
-     sock = creerSocketUDP(13000);
+     sock = creerSocketUDP(port);
      if (sock == -1) {
           printf("Erreur socket\n");
           pthread_exit(NULL);
@@ -132,7 +136,7 @@ void* init_gestionConsole(void* param)
 
                pthread_mutex_unlock(&mutex_memoire);
                break;
-               }
+          }
           case 3: { // Si c'est SET_NIV
                taille = 1;
                int resultat = 0;
@@ -164,7 +168,7 @@ void* init_gestionConsole(void* param)
 
                pthread_mutex_unlock(&mutex_memoire);
                break;
-               }
+          }
           }
 
           // envoi de la reponse a l'emetteur
