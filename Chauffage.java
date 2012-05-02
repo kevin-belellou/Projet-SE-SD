@@ -13,7 +13,7 @@ public class Chauffage {
      /**
       * Taille maximale des messages
       */
-     static final int TAILLEBUFF = 100;
+     protected static final int TAILLEBUFF = 100;
 
      /**
       * Lance le programme Chauffage. Les parametres sont les suivants :

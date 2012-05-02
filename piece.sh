@@ -19,6 +19,9 @@ then
 elif [ $# -eq 1 ] && [ $1 = "test" ]
 then
      set 224.3.14.16 6000 chambre localhost 12000
+elif [ $# -eq 1 ] && [ $1 = "test2" ]
+then
+     set 224.3.14.17 7000 salon localhost 12000
 else
      echo "Usage: ./piece.sh adrMulticast portMulticast nomPiece adrSysteme portSysteme
           - adrMulticast : Adresse multicast de la piece

@@ -16,9 +16,13 @@ public class ConsoleAffichage {
                while (true) {
                     Thread.sleep(1000);
                     i++;
-                    System.out.println("Nom = " + c.getNom(i));
+                    
+                    String[] resultat = c.getNoms();
+
+                    for(int k = 0; k < resultat.length; k++)
+                         System.out.println(" le tableau monTableau = " + resultat[k]);
+
                     System.out.println("Demande " + i + " envoyee");
-                    System.out.println("Temp = " + c.getTemperature(i));
                }
           } catch(Exception e) {
                e.printStackTrace();

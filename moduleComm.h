@@ -36,12 +36,12 @@ void* init_moduleComm(void* port_param)
      socket_ecoute = creerSocketTCP(port);
      if (socket_ecoute == -1) {
           perror("erreur creation socket_ecoute");
-          exit(-1);
+          pthread_exit(NULL);
      }
 
      if (listen(socket_ecoute, 10) == -1) {
           perror("erreur listen");
-          exit(1);
+          pthread_exit(NULL);
      }
 
      // On attend la connexion du client
