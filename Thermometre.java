@@ -1,13 +1,14 @@
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.DatagramPacket;
 import java.io.ByteArrayOutputStream;
 
 /**
  * Programme qui recoit la temperature courante d'une piece envoyee par Air.java
  * via le groupe multicast de cette piece, l'affiche à l'ecran et la communique
- * au module Communication Temperature du système central via des sockets TCP
+ * au module Communication Temperature du système central via des sockets TCP.
  */
 public class Thermometre {
      /**
@@ -18,10 +19,10 @@ public class Thermometre {
      /**
       * Lance le programme Thermometre. Les parametres sont les suivants :
       * $ java Thermometre groupeMulticast portMulticast
-      *   groupeMulticast: adresse IP du groupe multicast a utiliser pour la piece
-      *   portMulticast : port du groupe multicast
-      *   adrSysteme : adresse du systeme central
-      *   portSysteme : port du systeme central
+      *   - groupeMulticast : adresse IP du groupe multicast a utiliser pour la piece
+      *   - portMulticast : port du groupe multicast
+      *   - adrSysteme : adresse du systeme central
+      *   - portSysteme : port du systeme central
       */
      public static void main(String argv[])
      {
@@ -63,7 +64,9 @@ public class Thermometre {
                          output.writeTo(socketTCP.getOutputStream());
                     }
                }
-          } catch(Exception e) {
+          } catch (SocketException se) {
+               System.out.println("SocketException levee, le serveur a du etre stoppe");
+          } catch (Exception e) {
                System.err.println("[Erreur] Lecture socket : " + e);
           }
      }

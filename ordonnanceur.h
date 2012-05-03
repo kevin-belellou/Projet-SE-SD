@@ -180,7 +180,7 @@ int determinerFile(int piece)
      // Creation d'un pointeur sur la piece
      Piece* pPiece = &tabPieces.tabValeurs[piece];
 
-     if (pPiece->nivChauffageVoulu >= 0) // Si l'utilisateur a ordonne un niveau de chauffage
+     if (pPiece->nivChauffageVoulu > 0) // Si l'utilisateur a ordonne un niveau de chauffage
           pPiece->priorite = 0;
      else if (pPiece->temperatureVoulue < 0) // Si l'utilisateur n'a pas ordonne de temperature voulue
           pPiece->priorite = 2;
@@ -211,7 +211,9 @@ void calculerChauffage(int piece)
      // et celle voulue par l'utilisateur
      int diffTemp = pPiece->temperatureVoulue - pPiece->temperature;
 
-     if (diffTemp <= 0) // Si l'on a atteint ou depasse la temperature voulue
+     if (pPiece->nivChauffageVoulu > 0)
+          pPiece->nivChauffage = pPiece->nivChauffageVoulu;
+     else if (diffTemp <= 0) // Si l'on a atteint ou depasse la temperature voulue
           pPiece->nivChauffage = 0;
      else if (diffTemp > 0 && diffTemp <= 5) // Si la difference de temperature est inferieure a 5 degres
           pPiece->nivChauffage = 3;

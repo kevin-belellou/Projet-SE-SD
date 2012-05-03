@@ -59,18 +59,27 @@ void* init_gestionConsole(void* port_param)
           int i, tailleNomPiece, taille = 0;
           char nomPiece[25];
 
-          // Determination type de message
+          // Determination type de demande
           unsigned char type;
           memcpy(&type, buffer, 1);
           printf("type = %d ; nb_octets = %d\n", (int)type, nb_octets);
 
+          // Traitement selon le type de la demande
           switch ((int)type) {
           case 0: // Si c'est GET_INFO
                pthread_mutex_lock(&mutex_memoire);
 
+               // On ecrit dans reponse le nombre de pieces
                memcpy(reponse, &tabPieces.nbPieces, sizeof(int));
                taille = 4;
 
+               // Pour chaque piece, on ecrit dans reponse :
+               // - la taille de son nom
+               // - son nom
+               // - sa temperature actuelle
+               // - sa temperature voulue
+               // - son niveau de chaffage actuel
+               // - son niveau de chauffage voulu
                for (i = 0; i < tabPieces.nbPieces; i++) {
                     strcpy(nomPiece, tabPieces.tabValeurs[i].nom);
                     tailleNomPiece = strlen(nomPiece);
@@ -87,12 +96,17 @@ void* init_gestionConsole(void* port_param)
 
                pthread_mutex_unlock(&mutex_memoire);
                break;
+
           case 1: // Si c'est GET_NOMS
                pthread_mutex_lock(&mutex_memoire);
 
+               // On ecrit dans reponse le nombre de pieces
                memcpy(reponse, &tabPieces.nbPieces, sizeof(int));
                taille = 4;
 
+               // Pour chaque piece, on ecrit dans reponse :
+               // - la taille de son nom
+               // - son nom
                for (i = 0; i < tabPieces.nbPieces; i++) {
                     strcpy(nomPiece, tabPieces.tabValeurs[i].nom);
                     tailleNomPiece = strlen(nomPiece);
@@ -105,8 +119,11 @@ void* init_gestionConsole(void* port_param)
 
                pthread_mutex_unlock(&mutex_memoire);
                break;
+
           case 2: { // Si c'est SET_TEMP
                taille = 1;
+
+               // On ecrit dans reponse le resultat en avance
                int resultat = 0;
                memcpy(reponse, &resultat, sizeof(int));
 
@@ -125,20 +142,29 @@ void* init_gestionConsole(void* port_param)
                int trouve = existeDansTabPieces(piece);
                if (trouve >= 0) // Si la piece existe dans le tableau
                     place = trouve;
-               else {// Sinon
+               else { // Sinon
                     pthread_mutex_unlock(&mutex_memoire);
                     break;
                }
 
+               // Modification de la temperature voulue
                tabPieces.tabValeurs[place].temperatureVoulue = temperature;
+
+               // Reset du niveau de chauffage voulu
+               tabPieces.tabValeurs[place].nivChauffageVoulu = -1;
+
+               // Tout s'est bien passe, on modifie la valeur du resultat
                resultat = 1;
                memcpy(reponse, &resultat, sizeof(int));
 
                pthread_mutex_unlock(&mutex_memoire);
                break;
-          }
+               }
+
           case 3: { // Si c'est SET_NIV
                taille = 1;
+
+               // On ecrit dans reponse le resultat en avance
                int resultat = 0;
                memcpy(reponse, &resultat, sizeof(int));
 
@@ -157,18 +183,24 @@ void* init_gestionConsole(void* port_param)
                int trouve = existeDansTabPieces(piece);
                if (trouve >= 0) // Si la piece existe dans le tableau
                     place = trouve;
-               else {// Sinon
+               else { // Sinon
                     pthread_mutex_unlock(&mutex_memoire);
                     break;
                }
 
+               // Modification du niveau de chauffage voulu
                tabPieces.tabValeurs[place].nivChauffageVoulu = niveau;
+
+               // Reset de la temperature voulue
+               tabPieces.tabValeurs[place].temperatureVoulue = -1;
+
+               // Tout s'est bien passe, on modifie la valeur du resultat
                resultat = 1;
                memcpy(reponse, &resultat, sizeof(int));
 
                pthread_mutex_unlock(&mutex_memoire);
                break;
-          }
+               }
           }
 
           // envoi de la reponse a l'emetteur

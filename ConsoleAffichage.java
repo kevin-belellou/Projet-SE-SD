@@ -20,15 +20,10 @@ public class ConsoleAffichage {
                while (true) {
                     Thread.sleep(3000);
 
-                    //Renvoie un tableau de:
-                    /*
-                    * nom;
-                    * temp;
-                    * tempVoulue
-                    * nivChauffage
-                    * nivChauffageVoulu
-                    */
                     String[] resultat = c.getInfos();
+
+//                    Runtime.getRuntime().exec("clear");
+                    System.out.println(((char) 27)+"[2J");
 
                     for(int k = 0; k < resultat.length; k+=5) {
                          System.out.println(" Piece                  = " + resultat[k]);

@@ -1,6 +1,7 @@
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.DatagramPacket;
 import java.io.ByteArrayOutputStream;
 
@@ -18,11 +19,11 @@ public class Chauffage {
      /**
       * Lance le programme Chauffage. Les parametres sont les suivants :
       * $ java Chauffage groupeMulticast portMulticast piece adrSysteme portSysteme
-      *   groupeMulticast: adresse IP du groupe multicast a utiliser pour la piece
-      *   portMulticast : port du groupe multicast
-      *   piece : nom de la piece
-      *   adrSysteme : adresse du systeme central
-      *   portSysteme : port du systeme central
+      *   - groupeMulticast : adresse IP du groupe multicast a utiliser pour la piece
+      *   - portMulticast : port du groupe multicast
+      *   - piece : nom de la piece
+      *   - adrSysteme : adresse du systeme central
+      *   - portSysteme : port du systeme central
       */
      public static void main(String argv[])
      {
@@ -78,7 +79,9 @@ public class Chauffage {
 
                     nb_octets = socketTCP.getInputStream().read(data2);
                }
-          } catch(Exception e) {
+          } catch (SocketException se) {
+               System.out.println("SocketException levee, le serveur a du etre stoppe");
+          } catch (Exception e) {
                System.err.println("[Erreur] Lecture socket : " + e);
           }
      }
